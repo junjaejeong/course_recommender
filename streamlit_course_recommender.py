@@ -26,9 +26,9 @@ with st.form(key="search_form"):
         st.markdown("""
             <style>
             div.stButton > button:first-child {
-                height: 5.3em;
-                padding-top: 0.6em;
-                padding-bottom: 0.6em;
+                height: 3.3em;
+                padding-top: 1.0em;
+                padding-bottom: 0.4em;
             }
             </style>
         """, unsafe_allow_html=True)
