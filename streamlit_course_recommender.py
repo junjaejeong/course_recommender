@@ -50,7 +50,12 @@ if selected_categories:
 # 대분류 순서 정렬 + 정확도 기준 정렬
 category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
 results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
-results = results.sort_values(by=['대분류', '정확도점수'], ascending=[True, False])
+
+# ✅ 정확도점수 유무에 따라 정렬 방식 구분
+if '정확도점수' in results.columns:
+    results = results.sort_values(by=['대분류', '정확도점수'], ascending=[True, False])
+else:
+    results = results.sort_values(by='대분류')
 
 # 결과 표시
 if keyword or selected_categories:
@@ -72,7 +77,7 @@ if keyword or selected_categories:
                 st.markdown(f"## 📚 {current_category}")
                 st.markdown("---")
 
-            with st.expander(f"{row['과정명']} (정확도: {row['정확도점수']})"):
+            with st.expander(f"{row['과정명']}" + (f" (정확도: {row['정확도점수']})" if '정확도점수' in row else "")):
                 st.markdown(f"**출처**: {row['출처']}")
                 st.markdown(f"**카테고리**: {row['대분류']} / {row['카테고리1']} / {row['KG카테고리2']}")
                 st.markdown(f"**학습 인정 시간**: {row['학습인정시간']}시간")
