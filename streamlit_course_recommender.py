@@ -11,6 +11,18 @@ df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)
 # Streamlit UI
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
+
+# CSS 추가하여 버튼 가운데 정렬 
+st.markdown("""
+    <style>
+    div.stButton > button {
+        display: block !important;
+        margin: 0 auto !important;
+        width: 200px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # 입력 폼 구성
 with st.form(key="search_form"):
     keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
@@ -23,10 +35,8 @@ with st.form(key="search_form"):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
     
-    # 버튼을 화면 가운데에 배치하기 위한 3-열 레이아웃 사용
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        submitted = st.form_submit_button("🔍 추천 받기")
+    # 버튼을 중앙에 위치
+    submitted = st.form_submit_button("🔍 추천 받기")
 
 # 필터링 로직
 results = df.copy()
@@ -64,7 +74,7 @@ if submitted:
                 st.markdown(f"## 📚 {current_category}")
                 st.markdown("---")
             with st.container():
-                st.markdown(f"### 📘 {row['과정명']} (정확도: {row['정확도점수']}점)")
+                st.markdown(f"# 📘 {row['과정명']} (정확도: {row['정확도점수']}점)")
                 
                 col1, col2 = st.columns([2, 1])
                 with col1:
