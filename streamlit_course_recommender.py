@@ -9,16 +9,14 @@ kiwi = Kiwi()
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
 # 검색 대상 필드 확장: 과정명, 학습목표, 학습내용, 학습대상, 카테고리1, KG카테고리2
-df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']]\
-    .fillna('').agg(' '.join, axis=1)
-df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)\
-    .str.replace(r'\s+', ' ', regex=True).str.strip()
+df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']].fillna('').agg(' '.join, axis=1)
+df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True).str.replace(r'\s+', ' ', regex=True).str.strip()
 
 # Streamlit UI
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# CSS 추가하여 버튼 가운데 정렬 
+# CSS 추가: 버튼 가운데 정렬
 st.markdown("""
     <style>
     div.stButton > button {
@@ -70,7 +68,7 @@ if submitted:
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
     else:
-        # 대분류별 추천과정을 카드 슬라이더 형식의 HTML로 생성 (가로스크롤이 가능하도록 overflow-x: auto)
+        # 각 대분류별로 추천과정을 카드 슬라이더 형식의 HTML로 생성
         slider_html = """
         <html>
         <head>
@@ -88,10 +86,12 @@ if submitted:
                  position: relative;
                  margin-bottom: 40px;
              }
+             /* 고정된 너비(예: 800px)를 부여하여 모든 슬라이더에서 가로스크롤이 적용되도록 함 */
              .slider-container {
                  display: flex;
-                 overflow-x: auto;  /* 수동 가로 스크롤 가능 */
+                 overflow-x: auto;  
                  scroll-behavior: smooth;
+                 width: 800px;
              }
              .card {
                  min-width: 300px;
@@ -131,17 +131,18 @@ if submitted:
           <script>
              function slideRight(containerId) {
                  var container = document.getElementById(containerId);
-                 var cardWidth = 320; // 카드의 width(300px) + 오른쪽 margin (20px)
+                 var cardWidth = 320; // 카드의 width (300px) + 오른쪽 margin (20px)
                  container.scrollLeft += cardWidth;
              }
           </script>
         </head>
         <body>
         """
-        # 각 대분류별로 그룹화하여 슬라이더 구성
+        # 각 대분류별로 그룹화하여 슬라이더 구성 (모든 과정이 카드 형태로 노출)
         for cat in category_order:
             group = results[results['대분류'] == cat]
             if not group.empty:
+                # 슬라이더 id 생성 (대분류 내 영문+숫자만)
                 slider_id = f"slider_{''.join(ch for ch in cat if ch.isalnum())}"
                 slider_html += f"<h2>{cat}</h2>\n"
                 slider_html += f"<div class='slider-wrapper'>\n"
@@ -158,6 +159,7 @@ if submitted:
                     """
                     slider_html += card_html
                 slider_html += "</div>\n"  # slider-container 종료
+                # 오른쪽 슬라이드 버튼 추가 (모든 대분류에 대해 동일하게 적용)
                 slider_html += f"<button class='slider-arrow' onclick=\"slideRight('{slider_id}')\">&#9654;</button>\n"
                 slider_html += "</div>\n"  # slider-wrapper 종료
         slider_html += """
