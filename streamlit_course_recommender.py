@@ -175,7 +175,7 @@ if submitted:
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
                 with cols[i % n_cols]:
-                    st.markdown(f"### 📘 {row['과정명']}")
+                    st.markdown(f"##### 📘 {row['과정명']}")
                     st.markdown(display_rating(row.get('정확도점수', 'N/A')))
                     st.markdown(f"**🏷️ 카테고리:** {row['카테고리1']} / {row['KG카테고리2']}")
                     st.markdown(f"**⏱️ 학습 시간:** {row['학습인정시간']} 시간")
