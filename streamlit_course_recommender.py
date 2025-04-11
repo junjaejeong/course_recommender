@@ -32,15 +32,11 @@ with st.form(key="search_form"):
 
     # 버튼 가운데 정렬 (form 안에 배치)
     st.markdown("""
-        <style>
-        div.stButton > button {
-            display: block !important;
-            margin: 20px auto !important;
-            width: 200px !important;
-        }
-        </style>
+        <div style='display: flex; justify-content: center; margin-top: 20px;'>
+            <button type='submit' style='width: 200px; height: 3em; font-size: 16px;'>🔍 추천 받기</button>
+        </div>
     """, unsafe_allow_html=True)
-    submitted = st.form_submit_button("🔍 추천 받기")
+    submitted = st.form_submit_button("", disabled=True)
 
 # 필터링 로직
 results = df.copy()
