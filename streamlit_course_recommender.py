@@ -3,23 +3,37 @@ import pandas as pd
 from kiwipiepy import Kiwi
 import math
 
+# 추가 CSS: 좌우 여백 지정 (전체 너비 사용하며 좌우에 여백 확보)
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 100% !important;
+        padding-left: 10% !important;
+        padding-right: 10% !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # 형태소 분석기 초기화
 kiwi = Kiwi()
 
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
 # 검색 대상 필드 확장
-df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']]\
+df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']] \
                     .fillna('').agg(' '.join, axis=1)
-df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)\
-                                 .str.replace(r'\s+', ' ', regex=True)\
+df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True) \
+                                 .str.replace(r'\s+', ' ', regex=True) \
                                  .str.strip()
 
 # Streamlit UI
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# CSS 추가: 기본 스타일링 (팝업 대신 expander 사용하므로 모달 관련 CSS는 제거)
+# 기존 CSS: 카드, 버튼 등 스타일링 (모달 대신 st.expander 사용)
 st.markdown("""
     <style>
     /* 버튼 가운데 정렬 */
@@ -29,7 +43,7 @@ st.markdown("""
         width: 200px !important;
     }
     
-    /* 카드 컨테이너 스타일 (CSS를 사용한 가로 스크롤 대신 st.columns 활용) */
+    /* 카드 컨테이너 스타일 (st.columns 활용 예정이므로 추가 CSS는 선택사항) */
     .card {
         padding: 1rem;
         border-radius: 10px;
