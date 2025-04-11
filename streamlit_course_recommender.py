@@ -9,14 +9,17 @@ kiwi = Kiwi()
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
 # 검색 대상 필드 확장
-df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']].fillna('').agg(' '.join, axis=1)
-df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True).str.replace(r'\s+', ' ', regex=True).str.strip()
+df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']]\
+                    .fillna('').agg(' '.join, axis=1)
+df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)\
+                                 .str.replace(r'\s+', ' ', regex=True)\
+                                 .str.strip()
 
 # Streamlit UI
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# CSS 추가: 카드 UI 및 가로 스크롤 스타일링
+# CSS 추가: 기본 스타일링 (팝업 대신 expander 사용하므로 모달 관련 CSS는 제거)
 st.markdown("""
     <style>
     /* 버튼 가운데 정렬 */
@@ -26,25 +29,14 @@ st.markdown("""
         width: 200px !important;
     }
     
-    /* 카드 컨테이너 스타일 */
-    .card-container {
-        display: flex;
-        overflow-x: auto;
-        padding: 1rem 0;
-        gap: 1rem;
-        scrollbar-width: thin;
-    }
-    
-    /* 카드 스타일 */
+    /* 카드 컨테이너 스타일 (CSS를 사용한 가로 스크롤 대신 st.columns 활용) */
     .card {
-        min-width: 280px;
-        max-width: 280px;
         padding: 1rem;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         background-color: white;
         transition: transform 0.3s ease;
-        height: 100%;
+        margin-bottom: 1rem;
     }
     
     .card:hover {
@@ -102,33 +94,6 @@ st.markdown("""
         border-bottom: 2px solid #4CAF50;
         color: #333;
     }
-    
-    /* 스크롤바 스타일링 */
-    .card-container::-webkit-scrollbar {
-        height: 6px;
-    }
-    
-    .card-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-    
-    .card-container::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-    }
-    
-    .card-container::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
-    
-    /* 가로 스크롤 안내 텍스트 */
-    .scroll-hint {
-        font-size: 0.8rem;
-        color: #666;
-        font-style: italic;
-        margin-bottom: 0.5rem;
-    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -136,7 +101,6 @@ st.markdown("""
 def display_rating(score, max_score=10):
     if score is None or score == 'N/A':
         return "⭐ 관련도: N/A"
-    
     # 10점 만점에 5개 별로 변환
     star_count = min(5, max(1, round(score * 5 / max_score)))
     return "⭐" * star_count + f" 관련도: {score}점"
@@ -153,17 +117,16 @@ with st.form(key="search_form"):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
     
-    # 버튼을 중앙에 위치
     submitted = st.form_submit_button("🔍 추천 받기")
 
 # 필터링 로직
 results = df.copy()
 if submitted:
-    # (선택 사항) 먼저 교육방식에 따른 필터링 적용
+    # 교육방식 필터링 적용 (선택한 경우)
     if selected_categories:
         results = results[results['대분류'].isin(selected_categories)]
     
-    # 키워드가 입력된 경우에만 키워드 필터링 수행
+    # 키워드 필터링: 키워드가 입력된 경우에만 실행
     if keyword:
         morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
         keywords = set([keyword] + morphs)
@@ -180,7 +143,7 @@ if submitted:
     else:
         results = results.sort_values(by='대분류')
     
-    # 결과 표시
+    # 결과 출력
     st.markdown(f"### 🔎 '{keyword if keyword else '모든'}' 관련 추천 교육과정: {len(results)}건")
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
@@ -189,57 +152,30 @@ if submitted:
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
         st.markdown(category_count_display)
         
-        # 대분류별로 그룹화
+        # 대분류별 그룹화 후 수평 카드 배치
         grouped_results = results.groupby('대분류')
-        
         for category_name, group in grouped_results:
-            # 대분류 제목 표시
             st.markdown(f"<div class='category-header'>📚 {category_name}</div>", unsafe_allow_html=True)
-            st.markdown("<div class='scroll-hint'>→ 오른쪽으로 스크롤하여 더 많은 추천 과정을 확인하세요</div>", unsafe_allow_html=True)
-            
-            # 카드 컨테이너 시작
-            st.markdown("<div class='card-container'>", unsafe_allow_html=True)
-            
-            # 각 과정을 카드로 표시
-            for _, row in group.iterrows():
-                card_html = f"""
-                <div class='card'>
-                    <div class='card-title'>📘 {row['과정명']}</div>
-                    <div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>
-                    <div class='card-content'>
-                        <div>🏷️ <b>카테고리</b>: {row['카테고리1']} / {row['KG카테고리2']}</div>
-                        <div>⏱️ <b>학습 시간</b>: {row['학습인정시간']}시간</div>
-                        <div>🎯 <b>수료 기준</b>: {row['수료기준']}</div>
-                    </div>
-                """
-                
-                # 상세보기 버튼을 클릭하면 모달 표시되도록 고유 ID 생성
-                detail_id = f"detail_{hash(row['과정명'])}"
-                card_html += f"""
-                    <button class='card-button' 
-                            onclick="document.getElementById('{detail_id}').style.display='block'">
-                        📖 상세 보기
-                    </button>
-                </div>
-                """
-                
-                st.markdown(card_html, unsafe_allow_html=True)
-            
-            # 카드 컨테이너 닫기
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            # 각 과정의 상세 정보 모달 생성
-            for _, row in group.iterrows():
-                detail_id = f"detail_{hash(row['과정명'])}"
-                # Streamlit은 JavaScript modal을 직접 지원하지 않으므로 expander로 대체
-                with st.expander(f"📖 {row['과정명']} 상세 정보"):
-                    st.markdown("🎓 **학습 목표**")
-                    st.markdown(row['학습목표'])
-                    st.markdown("📘 **학습 내용**")
-                    st.markdown(row['학습내용'])
-                    st.markdown("🧍 **학습 대상**")
-                    st.markdown(row['학습대상'])
+            # 한 행에 표시할 카드 개수 (원하는 개수에 따라 조정)
+            n_cols = 3  
+            cols = st.columns(n_cols)
+            for i, (_, row) in enumerate(group.iterrows()):
+                with cols[i % n_cols]:
+                    st.markdown(f"### 📘 {row['과정명']}")
+                    st.markdown(display_rating(row.get('정확도점수', 'N/A')))
+                    st.markdown(f"**🏷️ 카테고리:** {row['카테고리1']} / {row['KG카테고리2']}")
+                    st.markdown(f"**⏱️ 학습 시간:** {row['학습인정시간']} 시간")
+                    st.markdown(f"**🎯 수료 기준:** {row['수료기준']}")
                     
+                    # 상세 정보는 st.expander로 구현
+                    with st.expander("📖 상세 정보"):
+                        st.markdown("### 🎓 학습 목표")
+                        st.markdown(row['학습목표'])
+                        st.markdown("### 📘 학습 내용")
+                        st.markdown(row['학습내용'])
+                        st.markdown("### 🧍 학습 대상")
+                        st.markdown(row['학습대상'])
+        
         # 아무것도 선택하지 않았을 때 안내
         if not selected_categories and not keyword:
             st.info("키워드를 입력하거나 교육방식을 선택하여 추천받으세요.")
