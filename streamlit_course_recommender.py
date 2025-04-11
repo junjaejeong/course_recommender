@@ -19,22 +19,8 @@ st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 �
 
 # 입력 폼 구성
 with st.form(key="search_form"):
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
-    with col2:
-        st.markdown("""
-            <style>
-            div.stButton > button:first-child {
-                transform: translateY(50px);  /* ✅ 버튼을 아래로 이동 */
-                height: 3.3em;
-                padding-top: 0.4em;
-                padding-bottom: 0.1em;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-        submitted = st.form_submit_button("🔍 추천 받기")
-    
+    keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
+
     # 교육방식 선택 제목
     st.markdown("<div style='font-weight: 600; font-size: 16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
 
@@ -44,6 +30,11 @@ with st.form(key="search_form"):
     for i, category in enumerate(categories):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
+
+    # 추천받기 버튼을 가운데 정렬로 아래 한 줄
+    st.markdown("<div style='text-align: center; margin-top: 1em;'>", unsafe_allow_html=True)
+    submitted = st.form_submit_button("🔍 추천 받기")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # 필터링 로직
 results = df.copy()
