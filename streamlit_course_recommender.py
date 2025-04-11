@@ -31,10 +31,17 @@ with st.form(key="search_form"):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
 
-    # 추천받기 버튼을 가운데 정렬로 아래 한 줄
-    st.markdown("<div style='text-align: center; margin-top: 1em;'>", unsafe_allow_html=True)
+    # 버튼 가운데 정렬 CSS 적용
+    st.markdown("""
+        <style>
+        div.stButton > button:first-child {
+            display: block;
+            margin: 0 auto;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     submitted = st.form_submit_button("🔍 추천 받기")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 # 필터링 로직
 results = df.copy()
