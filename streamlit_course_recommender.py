@@ -80,8 +80,7 @@ if submitted:
 
             with st.container():
                 st.markdown(f"### 📘 {row['과정명']}")
-                st.markdown(f"**출처**: {row['출처']}")
-                st.markdown(f"**카테고리**: {row['대분류']} / {row['카테고리1']} / {row['KG카테고리2']}")
+                st.markdown(f"**카테고리**: {row['카테고리1']} / {row['KG카테고리2']}")
                 st.markdown(f"**학습 시간**: {row['학습인정시간']}시간")
                 st.markdown(f"**수료 기준**: {row['수료기준']}")
                 st.markdown(f"**정확도**: {row['정확도점수'] if '정확도점수' in row else '-'}")
