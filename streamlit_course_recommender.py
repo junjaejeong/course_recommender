@@ -15,7 +15,7 @@ st.markdown("""
 """)
 
 # 플레이스홀더가 있는 텍스트 입력 필드
-keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: `AI`, `엑셀`, `디자인`, `영어`, `리더십` 등")
+keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어, 리더십 등")
 
 # "교육방식 선택" 제목 추가 (아이콘 포함)
 st.markdown("<div style='font-weight: 600; font-size: 16px; margin-top:20px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
