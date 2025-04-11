@@ -26,7 +26,7 @@ with st.form(key="search_form"):
         st.markdown("""
             <style>
             div.stButton > button:first-child {
-                margin-top: 0.6em;  /* ✅ 이것이 실제 위치 이동 */
+                margin-top: 10.6em;  /* ✅ 이것이 실제 위치 이동 */
                 height: 3.3em;
                 padding-top: 0.4em;
                 padding-bottom: 0.75em;
