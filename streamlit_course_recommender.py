@@ -64,7 +64,7 @@ if submitted:
     else:
         category_counts = results['대분류'].value_counts().reindex(category_order).dropna().astype(int).to_dict()
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
-        st.markdown( {category_count_display})
+        st.markdown( category_count_display)
         current_category = None
         for _, row in results.iterrows():
             if current_category != row['대분류']:
