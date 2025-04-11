@@ -28,7 +28,7 @@ with st.form(key="search_form"):
             div.stButton > button:first-child {
                 height: 3.3em;
                 padding-top: 10.0em;
-                padding-bottom: 0.4em;
+                padding-bottom: 0.1em;
             }
             </style>
         """, unsafe_allow_html=True)
