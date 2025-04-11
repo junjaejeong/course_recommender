@@ -5,9 +5,9 @@ import pandas as pd
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
 
-# 추천 텍스트 필드 준비
-df['추천_본문'] = df[['학습목표', '학습내용', '학습대상']].fillna('').agg(' '.join, axis=1)
-df['추천_본문'] = df['추천_본문'].str.replace(r'\n|\t', ' ', regex=True).str.replace(r'\s+', ' ', regex=True).str.strip()
+# 검색 대상 필드 확장
+df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']].fillna('').agg(' '.join, axis=1)
+df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True).str.replace(r'\s+', ' ', regex=True).str.strip()
 
 # Streamlit UI
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
@@ -29,12 +29,13 @@ for i, category in enumerate(categories):
 # 필터링 로직
 results = df.copy()
 
-# ✅ 실용적 키워드 매칭 (전체 키워드 OR 개별 단어 포함)
+# ✅ 키워드 OR 매칭 + 검색 필드 확장
 if keyword:
     keywords = keyword.strip().split()
+    all_keywords = [keyword] + keywords
     results = results[
-        results['추천_본문'].apply(
-            lambda text: keyword.lower() in text.lower() or any(k.lower() in text.lower() for k in keywords)
+        results['검색_본문'].apply(
+            lambda text: any(k.lower() in text.lower() for k in all_keywords)
         )
     ]
 
