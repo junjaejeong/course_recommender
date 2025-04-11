@@ -31,10 +31,14 @@ for i, category in enumerate(categories):
 # 필터링 로직
 results = df.copy()
 
-# ✅ 키워드 여러 단어로 분리 후 모두 포함된 경우만 필터링
+# ✅ 개선된 키워드 필터링: 전체 키워드 포함 or 분리된 단어 전체 포함
 if keyword:
     keywords = keyword.strip().split()
-    results = results[results['추천_본문'].apply(lambda text: all(k.lower() in text.lower() for k in keywords))]
+    results = results[
+        results['추천_본문'].apply(
+            lambda text: keyword.lower() in text.lower() or all(k.lower() in text.lower() for k in keywords)
+        )
+    ]
 
 if selected_categories:
     results = results[results['대분류'].isin(selected_categories)]
