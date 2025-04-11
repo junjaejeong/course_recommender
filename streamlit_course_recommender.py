@@ -34,15 +34,15 @@ with st.form(key="search_form"):
     for i, category in enumerate(categories):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
-    # 폼 제출 버튼 (더 이상 필요 없음)
-    # submitted = st.form_submit_button("🔍 추천 받기")
+    # 폼 제출 버튼 추가
+    submitted = st.form_submit_button("🔍 추천 받기")
 
-# 폼 외부의 버튼
-submitted = st.button("🔍 추천 받기") # 폼 외부에 버튼 생성
+# 폼 외부의 버튼 제거 (중복 제거)
+# submitted = st.button("🔍 추천 받기") # 폼 외부에 버튼 생성
 
 # 필터링 로직
 results = df.copy()
-if submitted: # submitted 변수는 폼 제출이 아닌 버튼 클릭으로 결정됩니다.
+if submitted: # submitted 변수는 폼 제출로 결정됩니다.
     if keyword:
         morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
         keywords = set([keyword] + morphs)
