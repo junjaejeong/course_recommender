@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
+from kiwipiepy import Kiwi
 import math
+
+# 형태소 분석기 초기화
+kiwi = Kiwi()
 
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
@@ -161,9 +165,8 @@ if submitted:
     
     # 키워드가 입력된 경우에만 키워드 필터링 수행
     if keyword:
-        # 형태소 분석 대신 간단한 단어 분리 사용
-        simple_words = [k.strip() for k in keyword.split() if len(k.strip()) > 1]
-        keywords = set([keyword] + simple_words)
+        morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
+        keywords = set([keyword] + morphs)
         def compute_score(text):
             return sum(text.lower().count(k.lower()) for k in keywords)
         results['정확도점수'] = results['검색_본문'].apply(compute_score)
