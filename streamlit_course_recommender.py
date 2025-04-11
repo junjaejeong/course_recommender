@@ -86,10 +86,10 @@ if submitted:
                 st.markdown(f"**수료 기준**: {row['수료기준']}")
                 st.markdown(f"**정확도**: {row['정확도점수'] if '정확도점수' in row else '-'}")
                 with st.expander("📖 상세 보기"):
-                    st.markdown(f"**학습 목표**
-{row['학습목표']}")
-                    st.markdown(f"**학습 내용**
-{row['학습내용']}")
-                    st.markdown(f"**학습 대상**
-{row['학습대상']}")
+                    st.markdown("**학습 목표**")
+                    st.markdown(row['학습목표'])
+                    st.markdown("**학습 내용**")
+                    st.markdown(row['학습내용'])
+                    st.markdown("**학습 대상**")
+                    st.markdown(row['학습대상'])
                 st.markdown("---")
