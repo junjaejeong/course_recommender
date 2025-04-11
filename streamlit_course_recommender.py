@@ -46,15 +46,17 @@ st.markdown("""
     /* 카드 컨테이너 스타일 (st.columns 활용 예정이므로 추가 CSS는 선택사항) */
     .card {
         padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-        background-color: white;
-        transition: transform 0.3s ease;
         margin-bottom: 1rem;
+        border: 1px solid #e0e0e0;  /* 얇은 외곽선 추가 */
+        border-radius: 10px;
+        background-color: #f9f9f9;  /* 약간의 배경색 변경 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
     .card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
     }
     
     /* 카드 제목 스타일 */
@@ -175,6 +177,8 @@ if submitted:
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
                 with cols[i % n_cols]:
+                    # 카드 내부 내용을 감싸는 div를 별도 처리해도 좋습니다.
+                    st.markdown(f"<div class='card'>", unsafe_allow_html=True)
                     st.markdown(f"###### 📘 {row['과정명']}")
                     st.markdown(display_rating(row.get('정확도점수', 'N/A')))
                     st.markdown(f"**🏷️ 카테고리:** {row['카테고리1']} / {row['KG카테고리2']}")
@@ -189,6 +193,7 @@ if submitted:
                         st.markdown(row['학습내용'])
                         st.markdown("### 🧍 학습 대상")
                         st.markdown(row['학습대상'])
+                    st.markdown("</div>", unsafe_allow_html=True)
         
         # 아무것도 선택하지 않았을 때 안내
         if not selected_categories and not keyword:
