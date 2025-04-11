@@ -29,7 +29,7 @@ with st.form(key="search_form"):
                 transform: translateY(10px);  /* ✅ 버튼을 아래로 이동 */
                 height: 3.3em;
                 padding-top: 0.4em;
-                padding-bottom: 0.75em;
+                padding-bottom: 0.1em;
             }
             </style>
         """, unsafe_allow_html=True)
