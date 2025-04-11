@@ -19,9 +19,13 @@ st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 �
 
 # 입력 폼 구성
 with st.form(key="search_form"):
-    keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
+    with col2:
+        submitted = st.form_submit_button("🔍 추천 받기")
     
-    # "교육방식 선택" 제목 추가
+    # 교육방식 선택 제목
     st.markdown("<div style='font-weight: 600; font-size: 16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
 
     categories = df['대분류'].dropna().unique().tolist()
@@ -30,8 +34,6 @@ with st.form(key="search_form"):
     for i, category in enumerate(categories):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
-
-    submitted = st.form_submit_button("🔍 추천 받기")
 
 # 필터링 로직
 results = df.copy()
@@ -81,7 +83,7 @@ if submitted:
             with st.container():
                 st.markdown(f"### 📘 {row['과정명']} (정확도: {row['정확도점수']}점)")
                 
-                # 카테고리 / 학습시간 나란히 + 이모지
+                # 카테고리 / 학습시간
                 col1, col2 = st.columns([2, 1])
                 with col1:
                     st.markdown(f"🏷️ **카테고리**: {row['카테고리1']} / {row['KG카테고리2']}")
@@ -91,13 +93,13 @@ if submitted:
                 # 수료 기준
                 st.markdown(f"🎯 **수료 기준**: {row['수료기준']}")
 
-                # 상세 보기 아래 배치
+                # 상세 보기
                 with st.expander("📖 상세 보기"):
-                    st.markdown("**학습 목표**")
+                    st.markdown("🎓 **학습 목표**")
                     st.markdown(row['학습목표'])
-                    st.markdown("**학습 내용**")
+                    st.markdown("📘 **학습 내용**")
                     st.markdown(row['학습내용'])
-                    st.markdown("**학습 대상**")
+                    st.markdown("🧍 **학습 대상**")
                     st.markdown(row['학습대상'])
 
                 st.markdown("---")
