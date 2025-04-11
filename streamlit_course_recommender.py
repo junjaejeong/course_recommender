@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 
 # 데이터 불러오기
-df = pd.read_excel("통합_교육과정_데이터셋_링크추가.xlsx")
+df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
 
 # 추천 텍스트 필드 준비
 df['추천_본문'] = df[['학습목표', '학습내용', '학습대상']].fillna('').agg(' '.join, axis=1)
