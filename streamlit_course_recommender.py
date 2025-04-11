@@ -74,7 +74,7 @@ if submitted:
                 st.markdown(f"## 📚 {current_category}")
                 st.markdown("---")
             with st.container():
-                st.markdown(f"# 📘 {row['과정명']} (정확도: {row['정확도점수']}점)")
+                st.markdown(f"##### 📘 {row['과정명']} (정확도: {row['정확도점수']}점)")
                 
                 col1, col2 = st.columns([2, 1])
                 with col1:
