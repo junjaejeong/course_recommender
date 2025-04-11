@@ -79,11 +79,13 @@ if submitted:
                 st.markdown("---")
 
             with st.container():
-                st.markdown(f"### 📘 {row['과정명']}")
-                st.markdown(f"**카테고리**: {row['카테고리1']} / {row['KG카테고리2']}")
-                st.markdown(f"**학습 시간**: {row['학습인정시간']}시간")
+                st.markdown(f"### 📘 {row['과정명']} (정확도: {row['정확도점수']}점)")
+                col1, col2 = st.columns([2, 1])
+                with col1:
+                    st.markdown(f"**카테고리**: {row['카테고리1']} / {row['KG카테고리2']}")
+                with col2:
+                    st.markdown(f"**학습 시간**: {row['학습인정시간']}시간")
                 st.markdown(f"**수료 기준**: {row['수료기준']}")
-                st.markdown(f"**정확도**: {row['정확도점수'] if '정확도점수' in row else '-'}")
                 with st.expander("📖 상세 보기"):
                     st.markdown("**학습 목표**")
                     st.markdown(row['학습목표'])
