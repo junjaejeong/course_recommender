@@ -12,10 +12,11 @@ df['추천_본문'] = df['추천_본문'].str.replace(r'\n|\t', ' ', regex=True)
 # Streamlit UI
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("""
-관심 있는 키워드를 입력하고, 원하는 교육방식을 선택하세요.
+관심 있는 키워드를 입력하면, 관련된 교육과정을 추천해드립니다.
+예: AI, 영어, 스피킹, 리더십 등
 """)
 
-keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어, 리더십 등")
+keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
 
 # "교육방식 선택" 제목 추가
 st.markdown("<div style='font-weight: 600; font-size: 16px; margin-top:20px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
@@ -31,12 +32,12 @@ for i, category in enumerate(categories):
 # 필터링 로직
 results = df.copy()
 
-# ✅ 개선된 키워드 필터링: 전체 키워드 포함 or 분리된 단어 전체 포함
+# ✅ 개선: 전체 키워드 or 그 안의 단어 중 하나라도 포함되면 추천 (OR 매칭)
 if keyword:
     keywords = keyword.strip().split()
     results = results[
         results['추천_본문'].apply(
-            lambda text: keyword.lower() in text.lower() or all(k.lower() in text.lower() for k in keywords)
+            lambda text: keyword.lower() in text.lower() or any(k.lower() in text.lower() for k in keywords)
         )
     ]
 
