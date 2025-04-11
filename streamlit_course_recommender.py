@@ -29,13 +29,28 @@ for i, category in enumerate(categories):
 # 필터링 로직
 results = df.copy()
 
-# ✅ 키워드 OR 매칭 + 검색 필드 확장
+# ✅ 부분 문자열 기반 키워드 매칭
 if keyword:
-    keywords = keyword.strip().split()
-    all_keywords = [keyword] + keywords
+    keyword = keyword.strip()
+    keywords = set()
+
+    # 전체 키워드 포함
+    keywords.add(keyword)
+
+    # 공백 기준 분리
+    for part in keyword.split():
+        if len(part) >= 2:
+            keywords.add(part)
+
+    # 2글자 이상 부분 문자열 생성
+    for i in range(len(keyword)):
+        for j in range(i+2, len(keyword)+1):
+            keywords.add(keyword[i:j])
+
+    # 추천 필터 적용
     results = results[
         results['검색_본문'].apply(
-            lambda text: any(k.lower() in text.lower() for k in all_keywords)
+            lambda text: any(k.lower() in text.lower() for k in keywords)
         )
     ]
 
