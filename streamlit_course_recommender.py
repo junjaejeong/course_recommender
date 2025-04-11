@@ -29,11 +29,11 @@ df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)
                                  .str.replace(r'\s+', ' ', regex=True) \
                                  .str.strip()
 
-# Streamlit UI
+# Streamlit UI: 타이틀과 설명
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# 기존 CSS: 카드, 버튼 등 스타일링 (모달 대신 st.expander 사용)
+# 기존 CSS: 카드, 버튼 등 스타일링 
 st.markdown("""
     <style>
     /* 버튼 가운데 정렬 */
@@ -43,20 +43,20 @@ st.markdown("""
         width: 200px !important;
     }
     
-    /* 카드 컨테이너 스타일 (st.columns 활용 예정이므로 추가 CSS는 선택사항) */
+    /* 카드 컨테이너 및 카드 스타일 */
     .card {
         padding: 1rem;
         margin-bottom: 1rem;
-        border: 1px solid #e0e0e0;  /* 얇은 외곽선 추가 */
+        border: 1px solid #cccccc;  /* 명확한 외곽선 */
         border-radius: 10px;
-        background-color: #f9f9f9;  /* 약간의 배경색 변경 */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        background-color: #eeeeee;  /* 눈에 띄는 배경색 */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.15);
     }
     
     /* 카드 제목 스타일 */
@@ -81,26 +81,6 @@ st.markdown("""
         margin-bottom: 0.5rem;
     }
     
-    /* 카드 내부 버튼 스타일 */
-    .card-button {
-        padding: 5px 10px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 0.5rem;
-        transition: background-color 0.3s ease;
-    }
-    
-    .card-button:hover {
-        background-color: #45a049;
-    }
-    
     /* 대분류 헤더 스타일 */
     .category-header {
         font-size: 1.5rem;
@@ -113,32 +93,29 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 별점 표시 함수
+# 별점 표시 함수: 10점 만점 기준 5개 별로 환산
 def display_rating(score, max_score=10):
     if score is None or score == 'N/A':
         return "⭐ 관련도: N/A"
-    # 10점 만점에 5개 별로 변환
     star_count = min(5, max(1, round(score * 5 / max_score)))
     return "⭐" * star_count + f" 관련도: {score}점"
 
-# 입력 폼 구성
+# 검색 폼 구성
 with st.form(key="search_form"):
     keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
-    # 교육방식 선택 제목
-    st.markdown("<div style='font-weight: 600; font-size: 16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-weight:600; font-size:16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
     categories = df['대분류'].dropna().unique().tolist()
     selected_categories = []
     cols = st.columns(len(categories))
     for i, category in enumerate(categories):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
-    
     submitted = st.form_submit_button("🔍 추천 받기")
 
-# 필터링 로직
+# 필터링 및 정렬 로직
 results = df.copy()
 if submitted:
-    # 교육방식 필터링 적용 (선택한 경우)
+    # 교육방식 필터링 (선택한 경우)
     if selected_categories:
         results = results[results['대분류'].isin(selected_categories)]
     
@@ -159,42 +136,40 @@ if submitted:
     else:
         results = results.sort_values(by='대분류')
     
-    # 결과 출력
     st.markdown(f"### 🔎 '{keyword if keyword else '모든'}' 관련 추천 교육과정: {len(results)}건")
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
     else:
+        # 그룹별(대분류) 과정 개수를 표시
         category_counts = results['대분류'].value_counts().reindex(category_order).dropna().astype(int).to_dict()
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
         st.markdown(category_count_display)
         
-        # 대분류별 그룹화 후 수평 카드 배치
+        # 대분류별 그룹화 후 카드 형태로 수평 배치
         grouped_results = results.groupby('대분류')
         for category_name, group in grouped_results:
             st.markdown(f"<div class='category-header'>📚 {category_name}</div>", unsafe_allow_html=True)
-            # 한 행에 표시할 카드 개수 (원하는 개수에 따라 조정)
-            n_cols = 3  
+            n_cols = 3  # 한 행에 표시할 카드 개수
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
                 with cols[i % n_cols]:
-                    # 카드 내부 내용을 감싸는 div를 별도 처리해도 좋습니다.
-                    st.markdown(f"<div class='card'>", unsafe_allow_html=True)
-                    st.markdown(f"###### 📘 {row['과정명']}")
-                    st.markdown(display_rating(row.get('정확도점수', 'N/A')))
-                    st.markdown(f"**🏷️ 카테고리:** {row['카테고리1']} / {row['KG카테고리2']}")
-                    st.markdown(f"**⏱️ 학습 시간:** {row['학습인정시간']} 시간")
-                    st.markdown(f"**🎯 수료 기준:** {row['수료기준']}")
+                    # 카드 영역: 각 카드 내부에 과정의 정보를 HTML 마크업으로 구성
+                    st.markdown("<div class='card'>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-title'>📘 {row['과정명']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>", unsafe_allow_html=True)
                     
-                    # 상세 정보는 st.expander로 구현
+                    # 상세 정보 영역: expander를 이용하여 숨겨진 영역으로 구성
                     with st.expander("📖 상세 정보"):
-                        st.markdown("### 🎓 학습 목표")
+                        st.markdown("#### 🎓 학습 목표")
                         st.markdown(row['학습목표'])
-                        st.markdown("### 📘 학습 내용")
+                        st.markdown("#### 📘 학습 내용")
                         st.markdown(row['학습내용'])
-                        st.markdown("### 🧍 학습 대상")
+                        st.markdown("#### 🧍 학습 대상")
                         st.markdown(row['학습대상'])
                     st.markdown("</div>", unsafe_allow_html=True)
         
-        # 아무것도 선택하지 않았을 때 안내
         if not selected_categories and not keyword:
             st.info("키워드를 입력하거나 교육방식을 선택하여 추천받으세요.")
