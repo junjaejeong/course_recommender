@@ -33,29 +33,29 @@ for i, category in enumerate(categories):
 # 필터링 로직
 results = df.copy()
 
-# ✅ 형태소 분석을 통한 키워드 분해 및 매칭
+# 형태소 분석 + 정확도 계산
 if keyword:
     morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
     keywords = set([keyword] + morphs)
 
-    results = results[
-        results['검색_본문'].apply(
-            lambda text: any(k.lower() in text.lower() for k in keywords)
-        )
-    ]
+    def compute_score(text):
+        return sum(text.lower().count(k.lower()) for k in keywords)
+
+    results['정확도점수'] = results['검색_본문'].apply(compute_score)
+    results = results[results['정확도점수'] > 0]
 
 if selected_categories:
     results = results[results['대분류'].isin(selected_categories)]
 
-# 대분류 순서 정렬
+# 대분류 순서 정렬 + 정확도 기준 정렬
 category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
 results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
-results = results.sort_values(by='대분류')
+results = results.sort_values(by=['대분류', '정확도점수'], ascending=[True, False])
 
 # 결과 표시
 if keyword or selected_categories:
     st.markdown(f"### 🔎 '{keyword if keyword else '모든'}' 관련 추천 교육과정: {len(results)}건")
-    
+
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
     else:
@@ -72,7 +72,7 @@ if keyword or selected_categories:
                 st.markdown(f"## 📚 {current_category}")
                 st.markdown("---")
 
-            with st.expander(row['과정명']):
+            with st.expander(f"{row['과정명']} (정확도: {row['정확도점수']})"):
                 st.markdown(f"**출처**: {row['출처']}")
                 st.markdown(f"**카테고리**: {row['대분류']} / {row['카테고리1']} / {row['KG카테고리2']}")
                 st.markdown(f"**학습 인정 시간**: {row['학습인정시간']}시간")
