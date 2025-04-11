@@ -17,12 +17,8 @@ st.markdown("""
     <style>
     div.stButton > button {
         display: block !important;
-        margin: 0 auto !important;
+        margin: 20px auto !important; /* 위아래 여백 추가 */
         width: 200px !important;
-    }
-    form {
-        width: fit-content;
-        margin: 0 auto;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -38,12 +34,15 @@ with st.form(key="search_form"):
     for i, category in enumerate(categories):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
-    # 버튼을 중앙에 위치
-    submitted = st.form_submit_button("🔍 추천 받기")
+    # 폼 제출 버튼 (더 이상 필요 없음)
+    # submitted = st.form_submit_button("🔍 추천 받기")
+
+# 폼 외부의 버튼
+submitted = st.button("🔍 추천 받기") # 폼 외부에 버튼 생성
 
 # 필터링 로직
 results = df.copy()
-if submitted:
+if submitted: # submitted 변수는 폼 제출이 아닌 버튼 클릭으로 결정됩니다.
     if keyword:
         morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
         keywords = set([keyword] + morphs)
