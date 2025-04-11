@@ -20,6 +20,9 @@ st.markdown("""
         margin: 20px auto !important; /* 위아래 여백 추가 */
         width: 200px !important;
     }
+    form {
+        width: 100%; /* 폼의 너비를 100%로 설정 */
+    }
     </style>
     """, unsafe_allow_html=True)
 
