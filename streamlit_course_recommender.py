@@ -20,6 +20,10 @@ st.markdown("""
         margin: 0 auto !important;
         width: 200px !important;
     }
+    form {
+        width: fit-content;
+        margin: 0 auto;
+    }
     </style>
     """, unsafe_allow_html=True)
 
