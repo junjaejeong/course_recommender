@@ -23,6 +23,15 @@ with st.form(key="search_form"):
     with col1:
         keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
     with col2:
+        st.markdown("""
+            <style>
+            div.stButton > button:first-child {
+                height: 3.3em;
+                padding-top: 0.6em;
+                padding-bottom: 0.6em;
+            }
+            </style>
+        """, unsafe_allow_html=True)
         submitted = st.form_submit_button("🔍 추천 받기")
     
     # 교육방식 선택 제목
@@ -83,17 +92,14 @@ if submitted:
             with st.container():
                 st.markdown(f"### 📘 {row['과정명']} (정확도: {row['정확도점수']}점)")
                 
-                # 카테고리 / 학습시간
                 col1, col2 = st.columns([2, 1])
                 with col1:
                     st.markdown(f"🏷️ **카테고리**: {row['카테고리1']} / {row['KG카테고리2']}")
                 with col2:
                     st.markdown(f"⏱️ **학습 시간**: {row['학습인정시간']}시간")
 
-                # 수료 기준
                 st.markdown(f"🎯 **수료 기준**: {row['수료기준']}")
 
-                # 상세 보기
                 with st.expander("📖 상세 보기"):
                     st.markdown("🎓 **학습 목표**")
                     st.markdown(row['학습목표'])
