@@ -7,7 +7,21 @@ st.set_page_config(
     page_title="KGM 4월 사이버 교육 추천받기",
     page_icon="🎯",
     layout="wide",  # 화면 전체(넓게)를 사용하도록 설정
-    initial_sidebar_state="expanded"  # 사이드바 기본 확장 (필요에 따라 조정 가능)
+    initial_sidebar_state="expanded"
+)
+
+# 추가 CSS: 기본 컨테이너의 max-width 값을 없애 전체 너비 사용
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 100% !important;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 # 형태소 분석기 초기화
@@ -23,7 +37,7 @@ df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# CSS 추가: 버튼 가운데 정렬
+# CSS 추가: 버튼 가운데 정렬 (버튼만 가운데 정렬하고 나머지는 전체 폭 활용)
 st.markdown("""
     <style>
     div.stButton > button {
