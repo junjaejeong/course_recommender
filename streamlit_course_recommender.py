@@ -39,7 +39,7 @@ if keyword:
     st.markdown(f"### 🔎 '{keyword}' 관련 추천 교육과정: {len(results)}건")
     
     if results.empty:
-        st.warning("추천 결과가 없습니다. 다른 키워드를 시도해보세요.")
+        st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
     else:
         for _, row in results.iterrows():
             with st.expander(row['과정명']):
