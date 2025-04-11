@@ -88,17 +88,20 @@ if submitted:
                 with col2:
                     st.markdown(f"**학습 시간**: {row['학습인정시간']}시간")
 
-                # 수료기준 / 상세보기 나란히
+                # 수료 기준 / 상세 보기 버튼 나란히
                 col3, col4 = st.columns([2, 1])
                 with col3:
                     st.markdown(f"**수료 기준**: {row['수료기준']}")
                 with col4:
-                    with st.expander("📖 상세 보기"):
-                        st.markdown("**학습 목표**")
-                        st.markdown(row['학습목표'])
-                        st.markdown("**학습 내용**")
-                        st.markdown(row['학습내용'])
-                        st.markdown("**학습 대상**")
-                        st.markdown(row['학습대상'])
+                    show_detail = st.checkbox("📖 상세 보기", key=f"detail_{row['과정키']}")
+
+                # 상세 내용은 한 줄 아래 전체 폭으로
+                if show_detail:
+                    st.markdown("**학습 목표**")
+                    st.markdown(row['학습목표'])
+                    st.markdown("**학습 내용**")
+                    st.markdown(row['학습내용'])
+                    st.markdown("**학습 대상**")
+                    st.markdown(row['학습대상'])
 
                 st.markdown("---")
