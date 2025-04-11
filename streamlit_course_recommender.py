@@ -9,7 +9,7 @@ df['추천_본문'] = df[['학습목표', '학습내용', '학습대상']].filln
 df['추천_본문'] = df['추천_본문'].str.replace(r'\n|\t', ' ', regex=True).str.replace(r'\s+', ' ', regex=True).str.strip()
 
 # Streamlit UI
-st.title("🎯 KGM 4월 사이버 교육과정 맞춤 추천기")
+st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("""
 관심 있는 키워드를 입력하고, 원하는 교육방식을 선택하세요.  
 예: `AI`, `엑셀`, `디자인`, `영어`, `리더십` 등
