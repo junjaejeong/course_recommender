@@ -15,17 +15,14 @@ st.markdown("""
 관심 있는 키워드를 입력하고, 원하는 교육방식을 선택하세요.
 """)
 
-# 플레이스홀더가 있는 텍스트 입력 필드
 keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어, 리더십 등")
 
-# "교육방식 선택" 제목 추가 (아이콘 포함)
+# "교육방식 선택" 제목 추가
 st.markdown("<div style='font-weight: 600; font-size: 16px; margin-top:20px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
 
-# 대분류 체크박스 UI
+# 대분류 선택
 categories = df['대분류'].dropna().unique().tolist()
 selected_categories = []
-
-# st.columns를 사용하여 각 항목을 동일한 너비로 배치
 cols = st.columns(len(categories))
 for i, category in enumerate(categories):
     if cols[i].checkbox(category, key=f"checkbox_{category}"):
@@ -34,13 +31,15 @@ for i, category in enumerate(categories):
 # 필터링 로직
 results = df.copy()
 
+# ✅ 키워드 여러 단어로 분리 후 모두 포함된 경우만 필터링
 if keyword:
-    results = results[results['추천_본문'].str.contains(keyword, case=False, na=False)]
+    keywords = keyword.strip().split()
+    results = results[results['추천_본문'].apply(lambda text: all(k.lower() in text.lower() for k in keywords))]
 
 if selected_categories:
     results = results[results['대분류'].isin(selected_categories)]
 
-# 대분류 정렬 순서 지정
+# 대분류 순서 정렬
 category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
 results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
 results = results.sort_values(by='대분류')
