@@ -32,7 +32,6 @@ st.markdown("""
 # 입력 폼 구성
 with st.form(key="search_form"):
     keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
-    # 교육방식 선택 제목
     st.markdown("<div style='font-weight: 600; font-size: 16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
     categories = df['대분류'].dropna().unique().tolist()
     selected_categories = []
@@ -41,13 +40,12 @@ with st.form(key="search_form"):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
     
-    # 버튼을 중앙에 위치
     submitted = st.form_submit_button("🔍 추천 받기")
 
 # 필터링 로직
 results = df.copy()
 if submitted:
-    # 먼저 교육방식에 따른 필터링 (키워드 미입력 시에도 해당 조건 적용)
+    # 교육방식 필터링: 선택된 교육방식에 따라 필터 적용 (키워드 미입력 시에도 해당 조건 적용)
     if selected_categories:
         results = results[results['대분류'].isin(selected_categories)]
     
@@ -68,12 +66,11 @@ if submitted:
     else:
         results = results.sort_values(by='대분류')
     
-    # 결과 표시 상단 요약
     st.markdown(f"### 🔎 '{keyword if keyword else '모든'}' 관련 추천 교육과정: {len(results)}건")
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
     else:
-        # 대분류별 추천과정을 카드 슬라이더 형식의 HTML로 생성
+        # 대분류별 추천과정을 카드 슬라이더 형식의 HTML로 생성 (가로스크롤이 가능하도록 overflow-x: auto)
         slider_html = """
         <html>
         <head>
@@ -93,7 +90,7 @@ if submitted:
              }
              .slider-container {
                  display: flex;
-                 overflow-x: hidden;
+                 overflow-x: auto;  /* 수동 가로 스크롤 가능 */
                  scroll-behavior: smooth;
              }
              .card {
@@ -145,12 +142,10 @@ if submitted:
         for cat in category_order:
             group = results[results['대분류'] == cat]
             if not group.empty:
-                # 슬라이더 id: 대분류에서 알파벳/숫자만 남김
                 slider_id = f"slider_{''.join(ch for ch in cat if ch.isalnum())}"
                 slider_html += f"<h2>{cat}</h2>\n"
                 slider_html += f"<div class='slider-wrapper'>\n"
                 slider_html += f"<div class='slider-container' id='{slider_id}'>\n"
-                # 각 카드 생성 (각 카드에는 과정명, 정확도, 카테고리, 학습시간, 수료 기준 표시)
                 for _, row in group.iterrows():
                     card_html = f"""
                     <div class='card'>
@@ -163,12 +158,10 @@ if submitted:
                     """
                     slider_html += card_html
                 slider_html += "</div>\n"  # slider-container 종료
-                # 오른쪽 슬라이드 버튼 추가
                 slider_html += f"<button class='slider-arrow' onclick=\"slideRight('{slider_id}')\">&#9654;</button>\n"
                 slider_html += "</div>\n"  # slider-wrapper 종료
         slider_html += """
         </body>
         </html>
         """
-        # HTML 슬라이더를 Streamlit에 렌더링 (높이는 필요에 따라 조정)
         components.html(slider_html, height=600)
