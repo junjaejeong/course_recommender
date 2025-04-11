@@ -29,11 +29,11 @@ df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)
                                  .str.replace(r'\s+', ' ', regex=True) \
                                  .str.strip()
 
-# Streamlit UI: 타이틀과 설명
+# Streamlit UI: 타이틀 및 설명
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# 기존 CSS: 카드, 버튼 등 스타일링 
+# 기존 CSS: 카드 및 버튼 등 스타일링
 st.markdown("""
     <style>
     /* 버튼 가운데 정렬 */
@@ -43,7 +43,7 @@ st.markdown("""
         width: 200px !important;
     }
     
-    /* 카드 컨테이너 및 카드 스타일 */
+    /* 카드 스타일 */
     .card {
         padding: 1rem;
         margin-bottom: 1rem;
@@ -71,7 +71,7 @@ st.markdown("""
     .card-content {
         font-size: 0.9rem;
         color: #555;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
     
     /* 별점 스타일 */
@@ -93,7 +93,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 별점 표시 함수: 10점 만점 기준 5개 별로 환산
+# 별점 표시 함수: 10점 만점 기준 5개 별로 변환
 def display_rating(score, max_score=10):
     if score is None or score == 'N/A':
         return "⭐ 관련도: N/A"
@@ -140,7 +140,7 @@ if submitted:
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
     else:
-        # 그룹별(대분류) 과정 개수를 표시
+        # 그룹별(대분류) 과정 개수 표시
         category_counts = results['대분류'].value_counts().reindex(category_order).dropna().astype(int).to_dict()
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
         st.markdown(category_count_display)
@@ -153,23 +153,27 @@ if submitted:
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
                 with cols[i % n_cols]:
-                    # 카드 영역: 각 카드 내부에 과정의 정보를 HTML 마크업으로 구성
-                    st.markdown("<div class='card'>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='card-title'>📘 {row['과정명']}</div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>", unsafe_allow_html=True)
-                    st.markdown(f"<div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>", unsafe_allow_html=True)
-                    
-                    # 상세 정보 영역: expander를 이용하여 숨겨진 영역으로 구성
-                    with st.expander("📖 상세 정보"):
-                        st.markdown("#### 🎓 학습 목표")
-                        st.markdown(row['학습목표'])
-                        st.markdown("#### 📘 학습 내용")
-                        st.markdown(row['학습내용'])
-                        st.markdown("#### 🧍 학습 대상")
-                        st.markdown(row['학습대상'])
-                    st.markdown("</div>", unsafe_allow_html=True)
+                    # st.container를 사용하여 카드와 상세정보(expander)를 같은 영역에 묶음
+                    with st.container():
+                        # 카드 정적 내용: HTML 마크업을 이용한 카드 디자인
+                        card_html = f"""
+                        <div class='card'>
+                            <div class='card-title'>📘 {row['과정명']}</div>
+                            <div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>
+                            <div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>
+                            <div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>
+                            <div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>
+                        </div>
+                        """
+                        st.markdown(card_html, unsafe_allow_html=True)
+                        # 상세 정보는 카드 아래 expander로 추가
+                        with st.expander("📖 상세 정보"):
+                            st.markdown("#### 🎓 학습 목표")
+                            st.markdown(row['학습목표'])
+                            st.markdown("#### 📘 학습 내용")
+                            st.markdown(row['학습내용'])
+                            st.markdown("#### 🧍 학습 대상")
+                            st.markdown(row['학습대상'])
         
         if not selected_categories and not keyword:
             st.info("키워드를 입력하거나 교육방식을 선택하여 추천받으세요.")
