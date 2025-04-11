@@ -33,7 +33,7 @@ df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# 기존 CSS: 카드 및 버튼 등 스타일링
+# 기존 CSS: 카드 및 버튼 등 스타일링 (카드 색상은 초록색 계열로 수정)
 st.markdown("""
     <style>
     /* 버튼 가운데 정렬 */
@@ -43,13 +43,13 @@ st.markdown("""
         width: 200px !important;
     }
     
-    /* 카드 스타일 */
+    /* 카드 스타일: 초록색 계열 */
     .card {
         padding: 1rem;
         margin-bottom: 1rem;
-        border: 1px solid #cccccc;  /* 명확한 외곽선 */
+        border: 1px solid #66bb6a;  /* 초록색 외곽선 */
         border-radius: 10px;
-        background-color: #eeeeee;  /* 눈에 띄는 배경색 */
+        background-color: #e8f5e9;  /* 연한 초록 배경색 */
         box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -64,7 +64,7 @@ st.markdown("""
         font-size: 1.1rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
-        color: #333;
+        color: #2e7d32;  /* 진한 초록색 텍스트 */
     }
     
     /* 카드 콘텐츠 스타일 */
@@ -76,7 +76,7 @@ st.markdown("""
     
     /* 별점 스타일 */
     .rating {
-        color: #FFD700;
+        color: #66bb6a;
         font-size: 1.2rem;
         margin-bottom: 0.5rem;
     }
@@ -88,12 +88,12 @@ st.markdown("""
         margin: 1.5rem 0 0.5rem 0;
         padding-bottom: 0.5rem;
         border-bottom: 2px solid #4CAF50;
-        color: #333;
+        color: #2e7d32;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 별점 표시 함수: 10점 만점 기준 5개 별로 변환
+# 별점 표시 함수: 10점 만점 기준 5개 별로 환산
 def display_rating(score, max_score=10):
     if score is None or score == 'N/A':
         return "⭐ 관련도: N/A"
@@ -153,9 +153,8 @@ if submitted:
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
                 with cols[i % n_cols]:
-                    # st.container를 사용하여 카드와 상세정보(expander)를 같은 영역에 묶음
+                    # st.container로 카드와 상세정보(expander)를 같은 영역에 묶음
                     with st.container():
-                        # 카드 정적 내용: HTML 마크업을 이용한 카드 디자인
                         card_html = f"""
                         <div class='card'>
                             <div class='card-title'>📘 {row['과정명']}</div>
@@ -166,7 +165,6 @@ if submitted:
                         </div>
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
-                        # 상세 정보는 카드 아래 expander로 추가
                         with st.expander("📖 상세 정보"):
                             st.markdown("#### 🎓 학습 목표")
                             st.markdown(row['학습목표'])
