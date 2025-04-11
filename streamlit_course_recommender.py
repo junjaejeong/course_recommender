@@ -1,6 +1,10 @@
 
 import streamlit as st
 import pandas as pd
+from kiwipiepy import Kiwi
+
+# 형태소 분석기 초기화
+kiwi = Kiwi()
 
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
@@ -29,25 +33,11 @@ for i, category in enumerate(categories):
 # 필터링 로직
 results = df.copy()
 
-# ✅ 부분 문자열 기반 키워드 매칭
+# ✅ 형태소 분석을 통한 키워드 분해 및 매칭
 if keyword:
-    keyword = keyword.strip()
-    keywords = set()
+    morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
+    keywords = set([keyword] + morphs)
 
-    # 전체 키워드 포함
-    keywords.add(keyword)
-
-    # 공백 기준 분리
-    for part in keyword.split():
-        if len(part) >= 2:
-            keywords.add(part)
-
-    # 2글자 이상 부분 문자열 생성
-    for i in range(len(keyword)):
-        for j in range(i+2, len(keyword)+1):
-            keywords.add(keyword[i:j])
-
-    # 추천 필터 적용
     results = results[
         results['검색_본문'].apply(
             lambda text: any(k.lower() in text.lower() for k in keywords)
