@@ -107,7 +107,7 @@ if submitted:
                 return 0
             return sum(1 for k in keywords if k in str(ktext))
         results['정확도점수'] = results['키워드'].apply(compute_score)
-        results = results[results['정확도점수'] >= 3]  # 정확도 기준 필터
+        results = results[results['정확도점수'] >= 1]  # 정확도 기준 필터
 
     category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
     results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
