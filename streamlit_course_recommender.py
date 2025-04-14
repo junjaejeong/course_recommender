@@ -42,7 +42,7 @@ st.markdown("""
         margin: 0 auto !important;
         width: 200px !important;
     }
-    
+
     /* 카드 스타일: 초록색 계열 */
     .card {
         padding: 1rem;
@@ -53,12 +53,12 @@ st.markdown("""
         box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    
+
     .card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 12px rgba(0,0,0,0.15);
     }
-    
+
     /* 카드 제목 스타일 */
     .card-title {
         font-size: 1.1rem;
@@ -66,21 +66,21 @@ st.markdown("""
         margin-bottom: 0.5rem;
         color: #2e7d32;  /* 진한 초록색 텍스트 */
     }
-    
+
     /* 카드 콘텐츠 스타일 */
     .card-content {
         font-size: 0.9rem;
         color: #555;
         margin-bottom: 0.5rem;
     }
-    
+
     /* 별점 스타일 */
     .rating {
         color: #66bb6a;
         font-size: 1.2rem;
         margin-bottom: 0.5rem;
     }
-    
+
     /* 대분류 헤더 스타일 */
     .category-header {
         font-size: 1.5rem;
@@ -118,7 +118,7 @@ if submitted:
     # 교육방식 필터링 (선택한 경우)
     if selected_categories:
         results = results[results['대분류'].isin(selected_categories)]
-    
+
     # 키워드 필터링: 키워드가 입력된 경우에만 실행
     if keyword:
         morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
@@ -126,8 +126,8 @@ if submitted:
         def compute_score(text):
             return sum(text.lower().count(k.lower()) for k in keywords)
         results['정확도점수'] = results['검색_본문'].apply(compute_score)
-        results = results[results['정확도점수'] > 0]
-    
+        results = results[results['정확도점수'] >= 3]
+
     # 정렬: 키워드가 있으면 정확도 점수 기준, 없으면 대분류 기준으로 정렬
     category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
     results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
@@ -135,7 +135,7 @@ if submitted:
         results = results.sort_values(by=['대분류', '정확도점수'], ascending=[True, False])
     else:
         results = results.sort_values(by='대분류')
-    
+
     st.markdown(f"### 🔎 '{keyword if keyword else '모든'}' 관련 추천 교육과정: {len(results)}건")
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
@@ -144,7 +144,7 @@ if submitted:
         category_counts = results['대분류'].value_counts().reindex(category_order).dropna().astype(int).to_dict()
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
         st.markdown(category_count_display)
-        
+
         # 대분류별 그룹화 후 카드 형태로 수평 배치
         grouped_results = results.groupby('대분류')
         for category_name, group in grouped_results:
@@ -153,7 +153,6 @@ if submitted:
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
                 with cols[i % n_cols]:
-                    # st.container로 카드와 상세정보(expander)를 같은 영역에 묶음
                     with st.container():
                         card_html = f"""
                         <div class='card'>
@@ -172,6 +171,6 @@ if submitted:
                             st.markdown(row['학습내용'])
                             st.markdown("#### 🧍 학습 대상")
                             st.markdown(row['학습대상'])
-        
+
         if not selected_categories and not keyword:
             st.info("키워드를 입력하거나 교육방식을 선택하여 추천받으세요.")
