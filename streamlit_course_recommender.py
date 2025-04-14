@@ -27,17 +27,17 @@ st.markdown("""
 .card-title {
     font-size: 1.1rem;
     font-weight: bold;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
     color: #2e7d32;
+}
+.card-subtitle {
+    font-size: 0.85rem;
+    color: #388e3c;
+    margin-bottom: 0.5rem;
 }
 .card-content {
     font-size: 0.9rem;
     color: #555;
-    margin-bottom: 0.5rem;
-}
-.rating {
-    color: #66bb6a;
-    font-size: 1.2rem;
     margin-bottom: 0.5rem;
 }
 .category-header {
@@ -65,13 +65,6 @@ df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
 # Streamlit UI
 st.title("🎯 KGM 4월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
-
-# 별점 표시 함수
-def display_rating(score, max_score=10):
-    if score is None or score == 'N/A':
-        return "⭐ 관련도: N/A"
-    star_count = min(5, max(1, round(score * 5 / max_score)))
-    return "⭐" * star_count + f" 관련도: {score}점"
 
 # 입력 폼
 with st.form(key="search_form"):
@@ -129,39 +122,38 @@ if submitted:
                         card_html = f"""
                         <div class='card'>
                             <div class='card-title'>📘 {row['과정명']}</div>
-                            <div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>
+                            <div class='card-subtitle'>관련도: {row.get('정확도점수', 'N/A')}점</div>
                             <div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>
                             <div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>
                             <div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>
                         </div>
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
-                        st.markdown("📖 **상세 정보**")
-                        st.markdown("#### 🎓 학습 목표")
-                        st.markdown(row['학습목표'])
-                        st.markdown("#### 📘 학습 내용")
-                        st.markdown(row['학습내용'])
-                        st.markdown("#### 🧍 학습 대상")
-                        st.markdown(row['학습대상'])
+                with st.expander(f"📖 {row['과정명']} 상세 정보"):
+                    st.markdown("#### 🎓 학습 목표")
+                    st.markdown(row['학습목표'])
+                    st.markdown("#### 📘 학습 내용")
+                    st.markdown(row['학습내용'])
+                    st.markdown("#### 🧍 학습 대상")
+                    st.markdown(row['학습대상'])
 
             if not more.empty:
                 with st.expander("📂 더보기"):
                     more_cols = st.columns(n_cols)
                     for i, (_, row) in enumerate(more.iterrows()):
                         with more_cols[i % n_cols]:
-                            card_container = st.container()
-                            with card_container:
+                            with st.container():
                                 card_html = f"""
                                 <div class='card'>
                                     <div class='card-title'>📘 {row['과정명']}</div>
-                                    <div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>
+                                    <div class='card-subtitle'>관련도: {row.get('정확도점수', 'N/A')}점</div>
                                     <div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>
                                     <div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>
                                     <div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>
                                 </div>
                                 """
                                 st.markdown(card_html, unsafe_allow_html=True)
-                                st.markdown("📖 **상세 정보**")
+                            with st.expander(f"📖 {row['과정명']} 상세 정보"):
                                 st.markdown("#### 🎓 학습 목표")
                                 st.markdown(row['학습목표'])
                                 st.markdown("#### 📘 학습 내용")
