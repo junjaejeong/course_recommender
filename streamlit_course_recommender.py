@@ -136,13 +136,13 @@ if submitted:
                         </div>
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
-                        with st.expander("📖 상세 정보"):
-                            st.markdown("#### 🎓 학습 목표")
-                            st.markdown(row['학습목표'])
-                            st.markdown("#### 📘 학습 내용")
-                            st.markdown(row['학습내용'])
-                            st.markdown("#### 🧍 학습 대상")
-                            st.markdown(row['학습대상'])
+                        st.markdown("📖 **상세 정보**")
+                        st.markdown("#### 🎓 학습 목표")
+                        st.markdown(row['학습목표'])
+                        st.markdown("#### 📘 학습 내용")
+                        st.markdown(row['학습내용'])
+                        st.markdown("#### 🧍 학습 대상")
+                        st.markdown(row['학습대상'])
 
             if not more.empty:
                 with st.expander("📂 더보기"):
@@ -161,8 +161,7 @@ if submitted:
                                 </div>
                                 """
                                 st.markdown(card_html, unsafe_allow_html=True)
-                            st.markdown(f"📖 **{row['과정명']} 상세 정보**")
-                            with st.expander("상세 보기"):
+                                st.markdown("📖 **상세 정보**")
                                 st.markdown("#### 🎓 학습 목표")
                                 st.markdown(row['학습목표'])
                                 st.markdown("#### 📘 학습 내용")
