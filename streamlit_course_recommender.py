@@ -149,7 +149,8 @@ if submitted:
                     more_cols = st.columns(n_cols)
                     for i, (_, row) in enumerate(more.iterrows()):
                         with more_cols[i % n_cols]:
-                            with st.container():
+                            card_container = st.container()
+                            with card_container:
                                 card_html = f"""
                                 <div class='card'>
                                     <div class='card-title'>📘 {row['과정명']}</div>
@@ -160,13 +161,14 @@ if submitted:
                                 </div>
                                 """
                                 st.markdown(card_html, unsafe_allow_html=True)
-                                with st.expander("📖 상세 정보"):
-                                    st.markdown("#### 🎓 학습 목표")
-                                    st.markdown(row['학습목표'])
-                                    st.markdown("#### 📘 학습 내용")
-                                    st.markdown(row['학습내용'])
-                                    st.markdown("#### 🧍 학습 대상")
-                                    st.markdown(row['학습대상'])
+                            st.markdown(f"📖 **{row['과정명']} 상세 정보**")
+                            with st.expander("상세 보기"):
+                                st.markdown("#### 🎓 학습 목표")
+                                st.markdown(row['학습목표'])
+                                st.markdown("#### 📘 학습 내용")
+                                st.markdown(row['학습내용'])
+                                st.markdown("#### 🧍 학습 대상")
+                                st.markdown(row['학습대상'])
 
         if not selected_categories and not keyword:
             st.info("키워드를 입력하거나 교육방식을 선택하여 추천받으세요.")
