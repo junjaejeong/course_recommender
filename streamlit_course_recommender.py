@@ -23,12 +23,18 @@ kiwi = Kiwi()
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋_6월.xlsx")
 # 검색 대상 필드 확장
-df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']]
-                    .fillna('').agg(' '.join, axis=1)
-df['검색_본문'] = df['검색_본문']
+# 여러 메소드를 메서드 체이닝할 때는 괄호로 묶어 올바른 들여쓰기를 유지합니다.
+df['검색_본문'] = (
+    df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']]
+    .fillna('')
+    .agg(' '.join, axis=1)
+)
+df['검색_본문'] = (
+    df['검색_본문']
     .str.replace(r'\n|\t', ' ', regex=True)
     .str.replace(r'\s+', ' ', regex=True)
     .str.strip()
+)
 
 # Streamlit UI: 타이틀 및 설명
 st.title("🎯 KGM 6월 사이버 교육 추천받기")
@@ -158,7 +164,7 @@ if submitted:
             for i, (_, row) in enumerate(group.iterrows()):
                 # 미리보기 링크 처리
                 preview = row.get('미리보기 링크', '')
-                if not pd.isna(preview) and preview:
+                if preview and not pd.isna(preview):
                     preview_html = f" (<a href='{preview}' target='_blank' rel='noopener noreferrer'>미리보기</a>)"
                 else:
                     preview_html = ''
@@ -177,3 +183,9 @@ if submitted:
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
                         with st.expander("📖 상세 정보"):
+                            st.markdown("#### 🎓 학습 목표")
+                            st.markdown(row['학습목표'])
+                            st.markdown("#### 📘 학습 내용")
+                            st.markdown(row['학습내용'])
+                            st.markdown("#### 🧍 학습 대상")
+                            st.markdown(row['학습대상'])
