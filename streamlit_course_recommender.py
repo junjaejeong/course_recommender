@@ -23,11 +23,12 @@ kiwi = Kiwi()
 # 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋_6월.xlsx")
 # 검색 대상 필드 확장
-df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']] \
+df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']]
                     .fillna('').agg(' '.join, axis=1)
-df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True) \
-                                 .str.replace(r'\s+', ' ', regex=True) \
-                                 .str.strip()
+df['검색_본문'] = df['검색_본문']
+    .str.replace(r'\n|\t', ' ', regex=True)
+    .str.replace(r'\s+', ' ', regex=True)
+    .str.strip()
 
 # Streamlit UI: 타이틀 및 설명
 st.title("🎯 KGM 6월 사이버 교육 추천받기")
@@ -43,7 +44,7 @@ st.markdown("""
         width: 200px !important;
     }
 
-    /* 카드 스타일: 초록색 계열 */
+    /* 카드 스타일: 초록색 계열 + 최소 높이 지정 */
     .card {
         padding: 1rem;
         margin-bottom: 1rem;
@@ -52,6 +53,9 @@ st.markdown("""
         background-color: #e8f5e9;  /* 연한 초록 배경색 */
         box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        /* 카드 높이를 최소 280px로 고정하여 정렬 문제 해결 */
+        min-height: 280px;
     }
 
     .card:hover {
@@ -173,12 +177,3 @@ if submitted:
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
                         with st.expander("📖 상세 정보"):
-                            st.markdown("#### 🎓 학습 목표")
-                            st.markdown(row['학습목표'])
-                            st.markdown("#### 📘 학습 내용")
-                            st.markdown(row['학습내용'])
-                            st.markdown("#### 🧍 학습 대상")
-                            st.markdown(row['학습대상'])
-
-        if not selected_categories and not keyword:
-            st.info("키워드를 입력하거나 교육방식을 선택하여 추천받으세요.")
