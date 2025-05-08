@@ -101,6 +101,13 @@ df['검색_본문'] = (
     .str.strip()
 )
 
+# 별점 표시 함수: 10점 만점 기준 5개 별로 환산
+def display_rating(score, max_score=10):
+    if score is None or score == 'N/A':
+        return "⭐ 관련도: N/A"
+    star_count = min(5, max(1, round(score * 5 / max_score)))
+    return "⭐" * star_count + f" 관련도: {score}점"
+
 # Streamlit UI: 타이틀 및 설명
 st.title("🎯 KGM 6월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
@@ -183,6 +190,3 @@ if submitted:
                             st.markdown(row['학습내용'])
                             st.markdown("#### 🧍 학습 대상")
                             st.markdown(row['학습대상'])
-
-        if not selected_categories and not keyword:
-            st.info("키워드를 입력하거나 교육방식을 선택하여 추천받으세요.")
