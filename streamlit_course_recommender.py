@@ -152,11 +152,19 @@ if submitted:
             n_cols = 3  # 한 행에 표시할 카드 개수
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
+                # 미리보기 링크 처리
+                preview = row.get('미리보기 링크', '')
+                if not pd.isna(preview) and preview:
+                    preview_html = f" (<a href='{preview}' target='_blank' rel='noopener noreferrer'>미리보기</a>)"
+                else:
+                    preview_html = ''
+                card_title = f"📘 {row['과정명']}{preview_html}"
+
                 with cols[i % n_cols]:
                     with st.container():
                         card_html = f"""
                         <div class='card'>
-                            <div class='card-title'>📘 {row['과정명']}</div>
+                            <div class='card-title'>{card_title}</div>
                             <div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>
                             <div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>
                             <div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>
