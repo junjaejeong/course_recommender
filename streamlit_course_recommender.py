@@ -30,7 +30,7 @@ df['검색_본문'] = df['검색_본문'].str.replace(r'\n|\t', ' ', regex=True)
                                  .str.strip()
 
 # Streamlit UI: 타이틀 및 설명
-st.title("🎯 KGM 4월 사이버 교육 추천받기")
+st.title("🎯 KGM 6월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
 # 기존 CSS: 카드 및 버튼 등 스타일링 (카드 색상은 초록색 계열로 수정)
