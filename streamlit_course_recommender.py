@@ -21,7 +21,7 @@ st.markdown(
 kiwi = Kiwi()
 
 # 데이터 불러오기
-df = pd.read_excel("통합_교육과정_데이터셋.xlsx")
+df = pd.read_excel("통합_교육과정_데이터셋_6월.xlsx")
 # 검색 대상 필드 확장
 df['검색_본문'] = df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']] \
                     .fillna('').agg(' '.join, axis=1)
