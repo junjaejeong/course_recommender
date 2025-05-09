@@ -126,7 +126,7 @@ df['검색_본문'] = (
 st.title("🎯 KGM 6월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# 별점 표시 함수
+# 별점 표시 함수: 10점 만점 기준 5개 별로 환산
 def display_rating(score, max_score=10):
     if score is None or score == 'N/A':
         return "⭐ 관련도: N/A"
@@ -138,17 +138,17 @@ with st.form(key="search_form"):
     keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
     st.markdown("<div style='font-weight:600; font-size:16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
     categories = df['대분류'].dropna().unique().tolist()
-    selected_category = st.selectbox("교육 방식 선택", ["전체"] + categories)
+    selected_categories = st.multiselect("교육 방식 선택", categories)
     submitted = st.form_submit_button("🔍 추천 받기")
 
 # 필터링 및 정렬 로직
 results = df.copy()
 if submitted:
     # 교육방식 필터링 (선택한 경우)
-    if selected_category != "전체":
-        results = results[results['대분류'] == selected_category]
+    if selected_categories:
+        results = results[results['대분류'].isin(selected_categories)]
 
-    # 키워드 필터링
+    # 키워드 필터링: 키워드가 입력된 경우에만 실행
     if keyword:
         morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
         keywords = set([keyword] + morphs)
@@ -157,7 +157,7 @@ if submitted:
         results['정확도점수'] = results['검색_본문'].apply(compute_score)
         results = results[results['정확도점수'] >= 3]
 
-    # 정렬
+    # 정렬: 키워드가 있으면 정확도 점수 기준, 없으면 대분류 기준으로 정렬
     category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
     results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
     if '정확도점수' in results.columns:
@@ -169,18 +169,18 @@ if submitted:
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
     else:
-        # 그룹별 과정 개수 표시
+        # 그룹별(대분류) 과정 개수 표시
         category_counts = results['대분류'].value_counts().reindex(category_order).dropna().astype(int).to_dict()
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
         st.markdown(category_count_display)
 
-        # 대분류별 그룹화 후 카드 형태로 최대 3개씩 표시
+        # 대분류별 그룹화 후 카드 형태로 수평 배치 (최대 3개)
         grouped_results = results.groupby('대분류')
         for category_name, group in grouped_results:
             st.markdown(f"<div class='category-header'>📚 {category_name}</div>", unsafe_allow_html=True)
             st.markdown("<div class='card-container'>", unsafe_allow_html=True)
             for i, (_, row) in enumerate(group.iterrows()):
-                if i >= 3:  # 최대 3개까지만 표시
+                if i >= 3:
                     break
                 preview = row.get('미리보기 링크', '')
                 preview_html = f" (<a href='{preview}' target='_blank' rel='noopener noreferrer' class='preview-link'>미리보기</a>)" if preview and not pd.isna(preview) else ''
