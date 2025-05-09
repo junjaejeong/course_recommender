@@ -14,56 +14,62 @@ st.markdown(
         padding-right: 10% !important;
     }
 
-    /* 카드 스타일: 초록색 계열 + 최소 높이 지정 */
+    /* 변경된 카드 스타일 */
     .card {
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 1px solid #66bb6a; /* 초록색 외곽선 */
-        border-radius: 10px;
-        background-color: #e8f5e9; /* 연한 초록 배경색 */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        /* 👇 최소 높이 지정 */
-        min-height: 280px; /* 예시 높이: 이미지의 콘텐츠를 포함할 수 있도록 조정 */
-        display: flex; /* 내부 요소 정렬을 위해 flexbox 사용 */
-        flex-direction: column; /* 내부 요소를 세로로 배치 */
+        padding: 1.2rem; /* 살짝 더 여유로운 패딩 */
+        margin-bottom: 1.2rem;
+        border: 1px solid #90caf9; /* 파란색 계열 외곽선 */
+        border-radius: 8px; /* 약간 둥근 테두리 */
+        background-color: #e3f2fd; /* 연한 파란색 배경 */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 좀 더 은은한 그림자 */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
     }
 
     .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+        border-color: #64b5f6; /* 호버 시 외곽선 색상 변경 */
     }
 
     .card-title {
-        font-size: 1.1rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        color: #2e7d32; /* 진한 초록색 텍스트 */
+        font-size: 1.15rem;
+        font-weight: 600; /* 살짝 더 굵게 */
+        margin-bottom: 0.6rem;
+        color: #1e88e5; /* 파란색 계열 제목 */
     }
 
     .card-content {
-        font-size: 0.9rem;
-        color: #555;
-        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        color: #424242;
+        margin-bottom: 0.6rem;
+        display: flex; /* 아이콘과 텍스트를 가로로 정렬 */
+        align-items: center; /* 세로 중앙 정렬 */
+    }
+
+    .card-content > span {
+        margin-left: 0.4rem; /* 아이콘과 텍스트 사이 간격 */
     }
 
     .rating {
-        color: #66bb6a;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
+        color: #fdd835; /* 노란색 계열 별점 */
+        font-size: 1.3rem;
+        margin-bottom: 0.7rem;
     }
 
     .category-header {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         font-weight: bold;
-        margin: 1.5rem 0 0.5rem 0;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #4CAF50;
-        color: #2e7d32;
+        margin: 1.8rem 0 0.6rem 0;
+        padding-bottom: 0.6rem;
+        border-bottom: 2px solid #1976d2; /* 더 진한 파란색 밑줄 */
+        color: #1e88e5;
     }
 
     details {
-        margin-top: auto; /* 상세 정보 expander를 카드 하단으로 밀착 */
+        margin-top: auto;
     }
     </style>
     """,
