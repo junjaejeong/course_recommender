@@ -54,14 +54,13 @@ st.markdown("""
     .card {
         padding: 1rem;
         margin-bottom: 1rem;
-        border: 1px solid #66bb6a;  /* 초록색 외곽선 */
+        border: 1px solid #66bb6a; /* 초록색 외곽선 */
         border-radius: 10px;
-        background-color: #e8f5e9;  /* 연한 초록 배경색 */
+        background-color: #e8f5e9; /* 연한 초록 배경색 */
         box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-        /* 카드 높이를 최소 280px로 고정하여 정렬 문제 해결 */
-        min-height: 280px;
+        /* 카드 높이를 최소화하여 내부 콘텐츠에 맞게 조정 */
+        min-height: auto;
     }
 
     .card:hover {
@@ -74,7 +73,7 @@ st.markdown("""
         font-size: 1.1rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
-        color: #2e7d32;  /* 진한 초록색 텍스트 */
+        color: #2e7d32; /* 진한 초록색 텍스트 */
     }
 
     /* 카드 콘텐츠 스타일 */
@@ -159,7 +158,7 @@ if submitted:
         grouped_results = results.groupby('대분류')
         for category_name, group in grouped_results:
             st.markdown(f"<div class='category-header'>📚 {category_name}</div>", unsafe_allow_html=True)
-            n_cols = 3  # 한 행에 표시할 카드 개수
+            n_cols = 3 # 한 행에 표시할 카드 개수
             cols = st.columns(n_cols)
             for i, (_, row) in enumerate(group.iterrows()):
                 # 미리보기 링크 처리
@@ -179,13 +178,14 @@ if submitted:
                             <div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>
                             <div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>
                             <div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>
+                            <div class='card-content'>
+                                <details>
+                                    <summary>📖 상세 정보</summary>
+                                    <strong>🎓 학습 목표</strong><br>{row['학습목표']}<br><br>
+                                    <strong>📘 학습 내용</strong><br>{row['학습내용']}<br><br>
+                                    <strong>🧍 학습 대상</strong><br>{row['학습대상']}
+                                </details>
+                            </div>
                         </div>
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
-                        with st.expander("📖 상세 정보"):
-                            st.markdown("#### 🎓 학습 목표")
-                            st.markdown(row['학습목표'])
-                            st.markdown("#### 📘 학습 내용")
-                            st.markdown(row['학습내용'])
-                            st.markdown("#### 🧍 학습 대상")
-                            st.markdown(row['학습대상'])
