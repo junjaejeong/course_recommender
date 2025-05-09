@@ -182,7 +182,7 @@ if submitted:
                             <div class='card-content'>
                                 <details>
                                     <summary>📖 상세 정보</summary>
-                                    <strong>🎓 학습 목표</strong><br>{row['학습목표']}<br><br>
+                                    <strong>🎓 학습 목표</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습목표'])}<br><br>
                                     <strong>📘 학습 내용</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습내용'])}<br><br>
                                     <strong>🧍 학습 대상</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습대상'])}
                                 </details>
