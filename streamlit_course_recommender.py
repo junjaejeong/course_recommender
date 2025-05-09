@@ -14,16 +14,24 @@ st.markdown(
         padding-right: 10% !important;
     }
 
+    /* 각 행을 Flex 컨테이너로 만들기 */
+    .st-emotion-cache-164nlkn { /* Streamlit 컬럼 컨테이너 클래스 (확인 필요) */
+        display: flex;
+        flex-direction: row; /* 카드를 가로로 배치 */
+        align-items: stretch; /* 높이를 부모 컨테이너에 맞춰 늘림 */
+        gap: 1rem; /* 카드 사이의 간격 유지 */
+    }
+
     /* 변경된 카드 스타일 */
     .card {
         padding: 1.2rem; /* 살짝 더 여유로운 패딩 */
-        margin-bottom: 1.2rem;
+        margin-bottom: 1.2rem; /* 이제 각 카드 자체의 margin-bottom은 불필요할 수 있음 */
         border: 1px solid #90caf9; /* 파란색 계열 외곽선 */
         border-radius: 8px; /* 약간 둥근 테두리 */
         background-color: #e3f2fd; /* 연한 파란색 배경 */
         box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 좀 더 은은한 그림자 */
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        min-height: 280px;
+        min-height: auto; /* 더 이상 min-height를 고정할 필요 없음 */
         display: flex;
         flex-direction: column;
     }
@@ -75,6 +83,8 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# ... (이후 코드는 이전과 동일) ...
 
 # 형태소 분석기 초기화
 kiwi = Kiwi()
