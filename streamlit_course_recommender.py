@@ -38,7 +38,8 @@ st.markdown(
     }
 
     .card {
-        flex: 0 0 calc(33% - 1rem); /* 3개씩 배치, 간격 고려 */
+        flex: 0 0 calc(33% - 1rem); /* 최대 3개씩 배치 */
+        max-width: calc(33% - 1rem); /* 최대 너비 제한 */
         padding: 1rem;
         margin-bottom: 1rem;
         border: 1px solid #81D4FA; /* 하늘색 테두리 */
@@ -137,15 +138,15 @@ with st.form(key="search_form"):
     keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
     st.markdown("<div style='font-weight:600; font-size:16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
     categories = df['대분류'].dropna().unique().tolist()
-    selected_categories = st.multiselect("교육 방식 선택", categories)
+    selected_category = st.selectbox("교육 방식 선택", ["전체"] + categories)
     submitted = st.form_submit_button("🔍 추천 받기")
 
 # 필터링 및 정렬 로직
 results = df.copy()
 if submitted:
     # 교육방식 필터링 (선택한 경우)
-    if selected_categories:
-        results = results[results['대분류'].isin(selected_categories)]
+    if selected_category != "전체":
+        results = results[results['대분류'] == selected_category]
 
     # 키워드 필터링
     if keyword:
@@ -173,12 +174,14 @@ if submitted:
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
         st.markdown(category_count_display)
 
-        # 대분류별 그룹화 후 카드 형태로 표시
+        # 대분류별 그룹화 후 카드 형태로 최대 3개씩 표시
         grouped_results = results.groupby('대분류')
         for category_name, group in grouped_results:
             st.markdown(f"<div class='category-header'>📚 {category_name}</div>", unsafe_allow_html=True)
             st.markdown("<div class='card-container'>", unsafe_allow_html=True)
-            for _, row in group.iterrows():
+            for i, (_, row) in enumerate(group.iterrows()):
+                if i >= 3:  # 최대 3개까지만 표시
+                    break
                 preview = row.get('미리보기 링크', '')
                 preview_html = f" (<a href='{preview}' target='_blank' rel='noopener noreferrer' class='preview-link'>미리보기</a>)" if preview and not pd.isna(preview) else ''
                 card_title = f"📘 {row['과정명']}{preview_html}"
