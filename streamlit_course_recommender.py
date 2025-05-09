@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from kiwipiepy import Kiwi
 import math
+import re  # 정규 표현식 라이브러리 추가
 
 # 추가 CSS: 좌우 여백 지정 (전체 너비 사용하며 좌우에 여백 확보)
 st.markdown(
@@ -182,8 +183,8 @@ if submitted:
                                 <details>
                                     <summary>📖 상세 정보</summary>
                                     <strong>🎓 학습 목표</strong><br>{row['학습목표']}<br><br>
-                                    <strong>📘 학습 내용</strong><br>{row['학습내용'].replace('\\n', '<br>')}<br><br>
-                                    <strong>🧍 학습 대상</strong><br>{row['학습대상'].replace('\\n', '<br>')}
+                                    <strong>📘 학습 내용</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습내용'])}<br><br>
+                                    <strong>🧍 학습 대상</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습대상'])}
                                 </details>
                             </div>
                         </div>
