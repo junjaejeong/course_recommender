@@ -7,76 +7,94 @@ import math
 st.markdown(
     """
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
     .block-container {
-        max-width: 95% !important; /* 오른쪽 여백 줄임 */
+        max-width: 95% !important;
         padding-left: 2.5% !important;
         padding-right: 2.5% !important;
     }
+
     .category-filter {
         margin-bottom: 1rem;
         padding: 0.5rem;
         border: 1px solid #ccc;
         border-radius: 5px;
     }
+
     .category-filter label {
         font-weight: bold;
         margin-right: 0.5rem;
     }
+
     .card-container {
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
     }
+
     .card {
         flex: 0 0 calc(33% - 1rem); /* 3개씩 배치, 간격 고려 */
         padding: 1rem;
         margin-bottom: 1rem;
-        border: 1px solid #66bb6a; /* 초록색 외곽선 */
+        border: 1px solid #81D4FA; /* 하늘색 테두리 */
         border-radius: 10px;
-        background-color: #e8f5e9; /* 연한 초록 배경색 */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+        background-color: #E1F5FE; /* 연한 하늘색 배경 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        min-height: 250px; /* 카드 최소 높이 조정 */
+        min-height: 200px; /* 카드 최소 높이 조정 */
         display: flex;
         flex-direction: column;
         justify-content: space-between; /* 내용 균등 분배 */
     }
+
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
     }
+
     .card-title {
         font-size: 1.1rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
-        color: #2e7d32; /* 진한 초록색 텍스트 */
+        color: #1976D2; /* 진한 하늘색 텍스트 */
     }
+
     .card-content {
         font-size: 0.9rem;
         color: #555;
         margin-bottom: 0.3rem;
     }
+
     .rating {
-        color: #66bb6a;
+        color: #4FC3F7; /* 밝은 하늘색 */
         font-size: 1rem;
         margin-bottom: 0.5rem;
     }
+
     .preview-link {
         font-size: 0.8rem;
-        color: #1976d2;
+        color: #1976D2;
         text-decoration: none;
     }
+
     .preview-link:hover {
         text-decoration: underline;
     }
+
     .category-header {
         font-size: 1.5rem;
         font-weight: bold;
         margin: 1.5rem 0 0.5rem 0;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid #4CAF50;
-        color: #2e7d32;
+        border-bottom: 2px solid #4FC3F7; /* 밝은 하늘색 */
+        color: #1976D2;
     }
+
     .expander-title {
         font-weight: bold;
     }
@@ -119,7 +137,6 @@ with st.form(key="search_form"):
     keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
     st.markdown("<div style='font-weight:600; font-size:16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
     categories = df['대분류'].dropna().unique().tolist()
-    # 교육 방식 선택을 Multiselect로 변경
     selected_categories = st.multiselect("교육 방식 선택", categories)
     submitted = st.form_submit_button("🔍 추천 받기")
 
