@@ -2,28 +2,22 @@ import streamlit as st
 import pandas as pd
 from kiwipiepy import Kiwi
 import re
-# import streamlit.components.v1 as components # GA 삽입을 위해 더 이상 필요하지 않을 수 있습니다.
+import streamlit.components.v1 as components
 
 # ✅ Google Analytics(GA4) 삽입
-ga_script = """
+ga_html = """
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BKJ1BJRKE8"></script>
 <script>
+  console.log("GA Tag loaded!");
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-BKJ1BJRKE8');
-  console.log("GA Tag loaded!"); // 브라우저 콘솔에서 확인용 로그
 </script>
 """
-# 방법 A: st.markdown 사용 (모든 Streamlit 버전에서 작동)
-st.markdown(ga_script, unsafe_allow_html=True)
+components.html(ga_html, height=1)
 
-# 방법 B: st.html 사용 (Streamlit 버전 1.33.0 이상 권장)
-# Streamlit 버전을 확인하고 사용하세요.
-# if hasattr(st, 'html'):
-#     st.html(ga_script)
-# else:
-#     st.markdown(ga_script, unsafe_allow_html=True) # 낮은 버전일 경우 fallback
 
 # ✅ 스타일 정의
 st.markdown(
@@ -110,7 +104,10 @@ def display_rating(score, max_score=10):
 # ✅ 검색 폼
 with st.form(key="search_form"):
     keyword = st.text_input("🔑 관심 키워드 입력", placeholder="예: AI, 엑셀, 디자인, 영어스피킹 등")
-    st.markdown("<div style='font-weight:600; font-size:16px; margin-top:10px;'>✅ 교육방식 선택</div>", unsafe_allow_html=True)
+    st.markdown(
+        "<div style='font-weight:600; font-size:16px; margin-top:10px;'>✅ 교육방식 선택</div>",
+        unsafe_allow_html=True
+    )
     categories = df['대분류'].dropna().unique().tolist()
     selected_categories = []
     cols = st.columns(len(categories))
@@ -127,13 +124,16 @@ if submitted:
     if keyword:
         morphs = [token.form for token in kiwi.tokenize(keyword) if len(token.form) > 1]
         keywords = set([keyword] + morphs)
+
         def compute_score(text):
             return sum(text.lower().count(k.lower()) for k in keywords)
+
         results['정확도점수'] = results['검색_본문'].apply(compute_score)
         results = results[results['정확도점수'] >= 3]
 
     category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
     results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
+
     if '정확도점수' in results.columns:
         results = results.sort_values(by=['대분류', '정확도점수'], ascending=[True, False])
     else:
@@ -148,29 +148,35 @@ if submitted:
 
         grouped_results = results.groupby('대분류')
         for category_name, group in grouped_results:
-            st.markdown(f"<div class='category-header'>📚 {category_name}</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div class='category-header'>📚 {category_name}</div>",
+                unsafe_allow_html=True
+            )
             cols = st.columns(3)
             for i, (_, row) in enumerate(group.iterrows()):
                 preview = row.get('미리보기 링크', '')
-                preview_html = f" (<a href='{preview}' target='_blank' rel='noopener noreferrer'>미리보기</a>)" if preview and not pd.isna(preview) else ''
+                preview_html = (
+                    f" (<a href='{preview}' target='_blank' rel='noopener noreferrer'>미리보기</a>)"
+                    if preview and not pd.isna(preview) else ''
+                )
                 card_title = f"📘 {row['과정명']}{preview_html}"
                 with cols[i % 3]:
                     st.markdown(
                         f"""
                         <div class='card'>
-                            <div class='card-title'>{card_title}</div>
-                            <div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>
-                            <div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>
-                            <div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>
-                            <div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>
-                            <div class='card-content'>
-                                <details>
-                                    <summary>📖 상세 정보</summary>
-                                    <strong>🎓 학습 목표</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습목표'])}<br><br>
-                                    <strong>📘 학습 내용</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습내용'])}<br><br>
-                                    <strong>🧍 학습 대상</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습대상'])}
-                                </details>
-                            </div>
+                          <div class='card-title'>{card_title}</div>
+                          <div class='rating'>{display_rating(row.get('정확도점수', 'N/A'))}</div>
+                          <div class='card-content'><strong>🏷️ 카테고리:</strong> {row['카테고리1']} / {row['KG카테고리2']}</div>
+                          <div class='card-content'><strong>⏱️ 학습 시간:</strong> {row['학습인정시간']} 시간</div>
+                          <div class='card-content'><strong>🎯 수료 기준:</strong> {row['수료기준']}</div>
+                          <div class='card-content'>
+                            <details>
+                              <summary>📖 상세 정보</summary>
+                              <strong>🎓 학습 목표</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습목표'])}<br><br>
+                              <strong>📘 학습 내용</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습내용'])}<br><br>
+                              <strong>🧍 학습 대상</strong><br>{re.sub(r'\r\n|\r|\n', '<br>', row['학습대상'])}
+                            </details>
+                          </div>
                         </div>
                         """,
                         unsafe_allow_html=True
