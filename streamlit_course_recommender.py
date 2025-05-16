@@ -15,7 +15,15 @@ ga_script = """
   console.log("GA Tag loaded!"); // 브라우저 콘솔에서 확인용 로그
 </script>
 """
+# 방법 A: st.markdown 사용 (모든 Streamlit 버전에서 작동)
+st.markdown(ga_script, unsafe_allow_html=True)
 
+# 방법 B: st.html 사용 (Streamlit 버전 1.33.0 이상 권장)
+# Streamlit 버전을 확인하고 사용하세요.
+# if hasattr(st, 'html'):
+#     st.html(ga_script)
+# else:
+#     st.markdown(ga_script, unsafe_allow_html=True) # 낮은 버전일 경우 fallback
 
 # ✅ 스타일 정의
 st.markdown(
