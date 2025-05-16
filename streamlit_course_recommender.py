@@ -1,38 +1,27 @@
 import streamlit as st
 import pandas as pd
 from kiwipiepy import Kiwi
+import math
 import re
 import streamlit.components.v1 as components
 
-# 세션 상태를 사용하여 페이지 로드 추적
-if 'page_loaded' not in st.session_state:
-    st.session_state.page_loaded = False
-
-# ✅ Google Analytics(GA4) 삽입 - 수정된 버전
+# ✅ Google Analytics(GA4) 삽입 (G-XXXXXXX를 실제 측정 ID로 바꾸세요)
 components.html(
     """
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BKJ1BJRKE8"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-BKJ1BJRKE8', {
-        'send_page_view': true,
-        'debug_mode': true
-      });
-      // 페이지 뷰 이벤트 명시적 발송
-      gtag('event', 'page_view', {
-        'page_title': 'KGM 교육 추천',
-        'page_location': window.location.href
-      });
-      console.log('GA4 스크립트가 로드되었습니다.');
-    </script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BKJ1BJRKE8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BKJ1BJRKE8');
+</script>
     """,
-    height=50  # 최소한의 높이 설정
+    height=0  # 사용자에게 보이지 않게 삽입
 )
 
-# ✅ CSS 스타일 (기존과 동일)
+# ✅ CSS 스타일
 st.markdown(
     """
     <style>
@@ -117,26 +106,6 @@ df['검색_본문'] = (
 st.title("🎯 KGM 6월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
-# 사용자 상호작용 이벤트 추적 함수
-def track_event(event_name, event_params=None):
-    if event_params is None:
-        event_params = {}
-    
-    event_params_json = '{' + ', '.join([f"'{k}': '{v}'" for k, v in event_params.items()]) + '}'
-    components.html(
-        f"""
-        <script>
-        if (typeof gtag === 'function') {{
-            gtag('event', '{event_name}', {event_params_json});
-            console.log('이벤트 전송: {event_name}', {event_params_json});
-        }} else {{
-            console.error('gtag 함수를 찾을 수 없습니다. GA4가 제대로 로드되지 않았습니다.');
-        }}
-        </script>
-        """,
-        height=0
-    )
-
 # ✅ 별점 함수
 def display_rating(score, max_score=10):
     if score is None or score == 'N/A':
@@ -155,10 +124,6 @@ with st.form(key="search_form"):
         if cols[i].checkbox(category, key=f"checkbox_{category}"):
             selected_categories.append(category)
     submitted = st.form_submit_button("🔍 추천 받기")
-
-# 폼 제출 시 이벤트 추적
-if submitted:
-    track_event('search_submit', {'keyword': keyword, 'categories': ','.join(selected_categories)})
 
 # ✅ 필터링 및 결과 출력
 results = df.copy()
@@ -184,12 +149,10 @@ if submitted:
     st.markdown(f"### 🔎 '{keyword if keyword else '모든'}' 관련 추천 교육과정: {len(results)}건")
     if results.empty:
         st.warning("입력하신 키워드에 적합한 과정이 없습니다. 다른 키워드를 시도해보세요.")
-        track_event('no_results', {'keyword': keyword})
     else:
         category_counts = results['대분류'].value_counts().reindex(category_order).dropna().astype(int).to_dict()
         category_count_display = ", ".join([f"{cat}: {count}건" for cat, count in category_counts.items()])
         st.markdown(category_count_display)
-        track_event('search_results', {'count': str(len(results)), 'keyword': keyword})
 
         grouped_results = results.groupby('대분류')
         for category_name, group in grouped_results:
@@ -199,7 +162,7 @@ if submitted:
             for i, (_, row) in enumerate(group.iterrows()):
                 preview = row.get('미리보기 링크', '')
                 if preview and not pd.isna(preview):
-                    preview_html = f" (<a href='{preview}' target='_blank' rel='noopener noreferrer' onclick=\"gtag('event', 'preview_click', {{'course': '{row['과정명']}'}});\">미리보기</a>)"
+                    preview_html = f" (<a href='{preview}' target='_blank' rel='noopener noreferrer'>미리보기</a>)"
                 else:
                     preview_html = ''
                 card_title = f"📘 {row['과정명']}{preview_html}"
@@ -224,22 +187,3 @@ if submitted:
                         </div>
                         """
                         st.markdown(card_html, unsafe_allow_html=True)
-
-# 페이지가 처음 로드될 때 GA4 이벤트 발생 (세션 상태 사용)
-if not st.session_state.page_loaded:
-    track_event('page_load', {'page': 'KGM 교육 추천'})
-    st.session_state.page_loaded = True
-
-# 추가: GA4 디버깅 도구 (개발 중에만 사용)
-with st.expander("GA4 디버깅 도구", expanded=False):
-    st.markdown("이 섹션은 개발 중에만 표시되며, 배포 전에 제거하세요.")
-    if st.button("테스트 이벤트 발송"):
-        track_event('test_event', {'timestamp': str(pd.Timestamp.now())})
-        st.success("테스트 이벤트가 발송되었습니다. GA4 DebugView에서 확인하세요.")
-    
-    st.markdown("""
-    ### GA4 디버깅 팁:
-    1. 브라우저 콘솔(F12)에서 `gtag` 함수가 정의되어 있는지 확인하세요.
-    2. 네트워크 탭에서 `collect` 요청이 발생하는지 확인하세요.
-    3. GA4 관리자 화면의 DebugView에서 이벤트를 확인하세요.
-    """)
