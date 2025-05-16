@@ -16,7 +16,7 @@ components.html(
       gtag('config', 'G-BKJ1BJRKE8');
     </script>
     """,
-    height=0
+    height=1
 )
 
 # ✅ 스타일 정의
