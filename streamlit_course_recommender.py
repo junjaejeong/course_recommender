@@ -2,22 +2,20 @@ import streamlit as st
 import pandas as pd
 from kiwipiepy import Kiwi
 import re
-import streamlit.components.v1 as components
+# import streamlit.components.v1 as components # GA 삽입을 위해 더 이상 필요하지 않을 수 있습니다.
 
 # ✅ Google Analytics(GA4) 삽입
-components.html(
-    """
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BKJ1BJRKE8"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-BKJ1BJRKE8');
-    </script>
-    """,
-    height=1
-)
+ga_script = """
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BKJ1BJRKE8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-BKJ1BJRKE8');
+  console.log("GA Tag loaded!"); // 브라우저 콘솔에서 확인용 로그
+</script>
+"""
+
 
 # ✅ 스타일 정의
 st.markdown(
