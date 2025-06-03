@@ -87,6 +87,10 @@ st.markdown(
 # ✅ 형태소 분석기 초기화
 kiwi = Kiwi()
 
+# 현재 .py 파일이 있는 디렉토리 기준으로 엑셀 경로 설정
+base_path = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(base_path, "통합_교육과정_데이터셋_7월.xlsx")
+
 # ✅ 데이터 불러오기
 df = pd.read_excel("통합_교육과정_데이터셋_7월.xlsx")
 df['검색_본문'] = (
