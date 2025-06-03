@@ -143,8 +143,16 @@ if submitted:
         keywords = set([keyword] + morphs)
         def compute_score(text):
             return sum(text.lower().count(k.lower()) for k in keywords)
-        results['정확도점수'] = results['검색_본문'].apply(compute_score)
-        results = results[results['정확도점수'] >= 3]
+       results['정확도점수'] = results['검색_본문'].apply(compute_score)
+
+# '과정명'에 키워드가 하나라도 포함된 경우 True
+def match_in_title(title):
+    return any(k.lower() in title.lower() for k in keywords)
+
+results['과정명포함'] = results['과정명'].apply(match_in_title)
+
+# 조건: 정확도점수 ≥ 3 또는 과정명에 키워드 포함
+results = results[(results['정확도점수'] >= 3) | (results['과정명포함'])]
 
     category_order = ['직무(무료)', '직무(유료)', '북러닝', '전화외국어', '외국어']
     results['대분류'] = pd.Categorical(results['대분류'], categories=category_order, ordered=True)
