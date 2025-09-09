@@ -81,7 +81,7 @@ st.markdown(
 kiwi = Kiwi()
 
 # ✅ 데이터 불러오기
-file_path = os.path.join(os.getcwd(), "통합_교육과정_데이터셋_9월.xlsx")
+file_path = os.path.join(os.getcwd(), "통합_교육과정_데이터셋_10월.xlsx")
 df = pd.read_excel(file_path)
 df['검색_본문'] = (
     df[['과정명', '학습목표', '학습내용', '학습대상', '카테고리1', 'KG카테고리2']]
@@ -96,7 +96,7 @@ df['검색_본문'] = (
 )
 
 # ✅ 제목 및 설명
-st.title("🎯 KGM 9월 사이버 교육 추천받기")
+st.title("🎯 KGM 10월 사이버 교육 추천받기")
 st.markdown("관심 있는 키워드를 입력하면 관련된 교육과정을 추천해드립니다.")
 
 # ✅ 별점 함수
