@@ -1,4 +1,4 @@
-streamlit
-pandas
+streamlit==1.30.0
+pandas==2.1.4
 openpyxl
-kiwipiepy
+kiwipiepy[binary]  # 🌟 이 부분을 kiwipiepy[binary]로 수정
