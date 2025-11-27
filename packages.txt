@@ -1,2 +1,4 @@
+# kiwipiepy가 바이너리 설치에 실패할 경우를 대비하여
+# 기본적인 빌드 툴은 남겨둡니다.
 build-essential
 cmake
